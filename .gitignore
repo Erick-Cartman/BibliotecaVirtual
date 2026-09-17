@@ -1,0 +1,6 @@
+.tools/
+.data/
+.logs/
+biblioteca-activa/node_modules/
+biblioteca-activa/vendor/
+**/.env

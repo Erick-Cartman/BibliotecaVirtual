@@ -1,0 +1,122 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Book;
+use App\Models\Reservation;
+use App\Models\User;
+use App\ReservationStatus;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class CatalogTest extends TestCase
+{
+    public function test_librarian_can_edit_book_metadata(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+        $book = Book::factory()->create([
+            'title' => 'Título original',
+            'authors' => ['Autor original'],
+            'search_text' => 'titulo original autor original',
+        ]);
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->assertSee('Editar datos')
+            ->call('editBook', (string) $book->getKey())
+            ->assertSet('editTitle', 'Título original')
+            ->set('editTitle', 'Nuevo título de investigación')
+            ->set('editAuthors', 'María Investigadora')
+            ->set('editIsbn', '9781234567890')
+            ->set('editPublisher', 'Editorial Universitaria')
+            ->set('editPublicationYear', '2025')
+            ->set('editDeweyCode', '001.42')
+            ->set('editLearningUnit', 'Metodología')
+            ->set('editProgram', 'Investigación')
+            ->call('updateBook')
+            ->assertHasNoErrors()
+            ->assertSet('editingBookId', null)
+            ->assertSee('Los datos del libro se actualizaron correctamente.');
+
+        $updatedBook = $book->refresh();
+        $this->assertSame('Nuevo título de investigación', $updatedBook->title);
+        $this->assertSame(['María Investigadora'], $updatedBook->authors);
+        $this->assertSame('9781234567890', $updatedBook->isbn);
+        $this->assertSame('Editorial Universitaria', $updatedBook->publisher);
+        $this->assertSame(2025, $updatedBook->publication_year);
+        $this->assertSame('001.42', $updatedBook->dewey_code);
+        $this->assertSame('Metodología', $updatedBook->learning_unit);
+        $this->assertSame('Investigación', $updatedBook->program);
+        $this->assertStringContainsString('nuevo titulo de investigacion', $updatedBook->search_text);
+    }
+
+    public function test_book_editing_requires_a_title_and_author(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+        $book = Book::factory()->create(['title' => 'Título sin cambios']);
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->call('editBook', (string) $book->getKey())
+            ->set('editTitle', '')
+            ->set('editAuthors', '')
+            ->call('updateBook')
+            ->assertHasErrors(['editTitle' => 'required', 'editAuthors' => 'required'])
+            ->assertSee('El título es obligatorio.')
+            ->assertSee('Registra al menos un autor.');
+
+        $this->assertSame('Título sin cambios', $book->refresh()->title);
+    }
+
+    public function test_student_cannot_edit_book_metadata(): void
+    {
+        $student = User::factory()->create();
+        $book = Book::factory()->create();
+
+        Livewire::actingAs($student)
+            ->test('pages::catalog')
+            ->assertDontSee('Editar datos')
+            ->call('editBook', (string) $book->getKey())
+            ->assertForbidden();
+    }
+
+    public function test_student_reservation_is_sent_to_circulation_and_shown_in_their_catalog(): void
+    {
+        $student = User::factory()->create(['student_code' => 'EST-123']);
+        $book = Book::factory()->create(['title' => 'Introducción a la administración']);
+
+        Livewire::actingAs($student)
+            ->test('pages::catalog')
+            ->call('reserve', (string) $book->getKey())
+            ->assertSee('Reservación enviada a Circulación')
+            ->assertSee('Introducción a la administración')
+            ->assertSee('Pendiente');
+
+        $reservation = Reservation::query()->firstOrFail();
+        $this->assertSame((string) $student->getKey(), (string) $reservation->user_id);
+        $this->assertSame((string) $book->getKey(), (string) $reservation->book_id);
+        $this->assertSame('EST-123', $reservation->student_code);
+        $this->assertSame(ReservationStatus::Pending, $reservation->status);
+    }
+
+    public function test_authenticated_user_can_view_catalog_content(): void
+    {
+        $student = User::factory()->create();
+        Book::factory()->create(['title' => 'Metodología de la investigación']);
+
+        $this->actingAs($student)->get('/catalogo')
+            ->assertOk()
+            ->assertSee('Catálogo')
+            ->assertSee('Metodología de la investigación');
+    }
+
+    public function test_catalog_escapes_untrusted_book_titles(): void
+    {
+        $student = User::factory()->create();
+        Book::factory()->create(['title' => '<script>alert(1)</script>']);
+
+        $this->actingAs($student)->get('/catalogo')
+            ->assertOk()
+            ->assertDontSee('<script>alert(1)</script>', false);
+    }
+}
