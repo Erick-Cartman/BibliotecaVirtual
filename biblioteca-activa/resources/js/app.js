@@ -1,4 +1,7 @@
+import { gsap } from 'gsap';
+
 const bookCarousels = document.querySelectorAll('[data-book-carousel]');
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 bookCarousels.forEach((carousel) => {
     const viewport = carousel.querySelector('[data-book-viewport]');
@@ -21,11 +24,25 @@ bookCarousels.forEach((carousel) => {
         return slides[0].getBoundingClientRect().width + gap;
     };
 
-    const updateCarousel = () => {
+    const updateCarousel = ({ animate = true } = {}) => {
         const maxIndex = Math.max(0, slides.length - visibleSlides);
 
         currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
-        track.style.transform = `translate3d(-${currentIndex * getStep()}px, 0, 0)`;
+        const finalX = -currentIndex * getStep();
+
+        gsap.killTweensOf(track);
+
+        if (!animate || reducedMotionQuery.matches) {
+            gsap.set(track, { x: finalX });
+        } else {
+            gsap.to(track, {
+                x: finalX,
+                duration: 0.55,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            });
+        }
+
         previousButton.disabled = currentIndex === 0;
         nextButton.disabled = currentIndex === maxIndex;
 
@@ -39,7 +56,28 @@ bookCarousels.forEach((carousel) => {
 
     const measureCarousel = () => {
         visibleSlides = Math.max(1, Math.floor(viewport.clientWidth / getStep()));
-        updateCarousel();
+        updateCarousel({ animate: false });
+    };
+
+    const revealBooks = () => {
+        if (reducedMotionQuery.matches) {
+            gsap.set(slides, { clearProps: 'opacity,transform,visibility' });
+
+            return;
+        }
+
+        gsap.fromTo(
+            slides,
+            { autoAlpha: 0, y: 16 },
+            {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.48,
+                ease: 'power2.out',
+                stagger: 0.04,
+                clearProps: 'opacity,transform,visibility',
+            },
+        );
     };
 
     previousButton.addEventListener('click', () => {
@@ -73,4 +111,5 @@ bookCarousels.forEach((carousel) => {
     }
 
     measureCarousel();
+    revealBooks();
 });

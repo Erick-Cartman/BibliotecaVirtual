@@ -50,7 +50,7 @@
 
                     @if ($featuredBooks->isNotEmpty())
                         <div id="featured-books-carousel" class="mt-6 overflow-hidden" data-book-viewport tabindex="0" aria-label="Libros destacados. Usa las flechas izquierda y derecha para avanzar.">
-                            <div class="flex gap-3 transition-transform duration-500 ease-out will-change-transform" data-book-track>
+                            <div class="flex gap-3 will-change-transform" data-book-track>
                                 @foreach ($featuredBooks as $book)
                                     <article class="w-[8.5rem] shrink-0" data-book-slide>
                                         <a
