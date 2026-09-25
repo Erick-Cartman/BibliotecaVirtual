@@ -1,10 +1,18 @@
 <?php
 
 use App\Http\Controllers\AuthenticatedSessionController;
+use App\Models\Book;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $featuredBooks = Book::query()
+        ->where('active', true)
+        ->whereNotNull('cover_url')
+        ->orderBy('title')
+        ->limit(10)
+        ->get();
+
+    return view('welcome', compact('featuredBooks'));
 })->name('home');
 
 Route::middleware('guest')->group(function (): void {

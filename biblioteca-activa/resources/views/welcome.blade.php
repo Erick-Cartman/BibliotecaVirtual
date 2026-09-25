@@ -32,18 +32,72 @@
                         <a href="#servicios" class="btn-secondary border-slate-600 bg-transparent text-white hover:border-white hover:text-white">Conocer servicios</a>
                     </div>
                 </div>
-                <div class="card self-center border-slate-700 bg-slate-900/80 p-5 backdrop-blur">
-                    <div class="rounded-xl bg-white p-5 text-slate-900">
-                        <p class="text-sm font-semibold text-brand-700">Búsqueda académica</p>
-                        <div class="mt-3 flex min-h-12 items-center gap-3 rounded-xl border border-slate-300 px-4 text-slate-500">
-                            <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-                            Título, autor, ISBN o unidad de aprendizaje
+                <div
+                    class="card self-center overflow-hidden border-slate-700 bg-slate-900/80 p-5 backdrop-blur sm:p-6"
+                    data-book-carousel
+                    role="region"
+                    aria-roledescription="carrusel"
+                    aria-labelledby="featured-books-title"
+                >
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-sm font-semibold text-indigo-300">Visor del acervo</p>
+                            <h2 id="featured-books-title" class="mt-2 font-display text-2xl font-bold text-white">Diez libros para descubrir</h2>
+                            <p class="mt-2 max-w-sm text-sm leading-6 text-slate-400">Una selección con portada para comenzar a explorar la colección.</p>
                         </div>
-                        <div class="mt-5 space-y-3">
-                            <div class="rounded-xl border border-slate-200 p-4"><span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Disponible</span><p class="mt-1 font-display text-lg font-bold">Consulta organizada del acervo</p><p class="text-sm text-slate-500">Clasificación, ubicación y ejemplares</p></div>
-                            <div class="rounded-xl border border-slate-200 p-4"><span class="text-xs font-bold uppercase tracking-wider text-brand-700">Tu actividad</span><p class="mt-1 font-display text-lg font-bold">Préstamos y reservaciones</p><p class="text-sm text-slate-500">Fechas claras y seguimiento desde el panel</p></div>
-                        </div>
+                        <span class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-100">{{ $featuredBooks->count() }} títulos</span>
                     </div>
+
+                    @if ($featuredBooks->isNotEmpty())
+                        <div id="featured-books-carousel" class="mt-6 overflow-hidden" data-book-viewport tabindex="0" aria-label="Libros destacados. Usa las flechas izquierda y derecha para avanzar.">
+                            <div class="flex gap-3 transition-transform duration-500 ease-out will-change-transform" data-book-track>
+                                @foreach ($featuredBooks as $book)
+                                    <article class="w-[8.5rem] shrink-0" data-book-slide>
+                                        <a
+                                            href="{{ auth()->check() ? route('catalog') : route('login') }}"
+                                            class="group block rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                                            aria-label="Consultar {{ $book->title }} en el catálogo"
+                                        >
+                                            <div class="relative aspect-[2/3] overflow-hidden rounded-2xl bg-slate-800 shadow-lg ring-1 ring-white/10">
+                                                <x-book-cover :book="$book" loading="eager" class="size-full transition duration-300 group-hover:scale-[1.02]" />
+                                                <span class="absolute inset-x-2 bottom-2 rounded-lg bg-slate-950/80 px-2 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-300">Disponible</span>
+                                            </div>
+                                            <p class="mt-3 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-white group-hover:text-indigo-200">{{ $book->title }}</p>
+                                            <p class="mt-1 line-clamp-1 text-xs text-slate-400">{{ $book->authorLine() ?: 'Autor no registrado' }}</p>
+                                        </a>
+                                    </article>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mt-5 flex items-center justify-between gap-4">
+                            <p class="text-xs leading-5 text-slate-400" data-book-carousel-status aria-live="polite"></p>
+                            <div class="flex shrink-0 gap-2">
+                                <button
+                                    type="button"
+                                    class="grid min-h-11 min-w-11 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-white transition hover:border-indigo-300 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                    data-book-carousel-prev
+                                    aria-controls="featured-books-carousel"
+                                    aria-label="Mostrar libros anteriores"
+                                >
+                                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m14 18-6-6 6-6"/></svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="grid min-h-11 min-w-11 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-white transition hover:border-indigo-300 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                    data-book-carousel-next
+                                    aria-controls="featured-books-carousel"
+                                    aria-label="Mostrar más libros"
+                                >
+                                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m10 18 6-6-6-6"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-6 rounded-2xl border border-dashed border-slate-700 px-5 py-8 text-sm leading-6 text-slate-400">
+                            Las portadas aparecerán aquí cuando el acervo esté disponible.
+                        </div>
+                    @endif
                 </div>
             </div>
         </section>
