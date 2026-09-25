@@ -22,6 +22,7 @@ class CatalogTest extends TestCase
 
         Livewire::actingAs($librarian)
             ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
             ->assertSee('Editar datos')
             ->call('editBook', (string) $book->getKey())
             ->assertSet('editTitle', 'Título original')
@@ -33,6 +34,7 @@ class CatalogTest extends TestCase
             ->set('editDeweyCode', '001.42')
             ->set('editLearningUnit', 'Metodología')
             ->set('editProgram', 'Investigación')
+            ->set('editCoverUrl', 'https://example.com/portadas/investigacion.jpg')
             ->call('updateBook')
             ->assertHasNoErrors()
             ->assertSet('editingBookId', null)
@@ -47,6 +49,7 @@ class CatalogTest extends TestCase
         $this->assertSame('001.42', $updatedBook->dewey_code);
         $this->assertSame('Metodología', $updatedBook->learning_unit);
         $this->assertSame('Investigación', $updatedBook->program);
+        $this->assertSame('https://example.com/portadas/investigacion.jpg', $updatedBook->cover_url);
         $this->assertStringContainsString('nuevo titulo de investigacion', $updatedBook->search_text);
     }
 
@@ -78,6 +81,58 @@ class CatalogTest extends TestCase
             ->assertDontSee('Editar datos')
             ->call('editBook', (string) $book->getKey())
             ->assertForbidden();
+    }
+
+    public function test_admin_can_open_a_book_record_and_start_editing(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $book = Book::factory()->create(['title' => 'Administración de bibliotecas']);
+
+        Livewire::actingAs($admin)
+            ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertSee('Editar datos')
+            ->call('editBook', (string) $book->getKey())
+            ->assertSet('editingBookId', (string) $book->getKey())
+            ->assertSet('editTitle', 'Administración de bibliotecas');
+    }
+
+    public function test_student_can_open_the_complete_book_record_in_read_only_mode(): void
+    {
+        $student = User::factory()->create();
+        $book = Book::factory()->create([
+            'title' => 'Diseño de sistemas',
+            'authors' => ['Elena Torres'],
+            'isbn' => '9781234567897',
+            'publisher' => 'Editorial Académica',
+            'publication_year' => 2024,
+            'dewey_code' => '005.12',
+            'learning_unit' => 'Ingeniería de software',
+        ]);
+
+        Livewire::actingAs($student)
+            ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertSet('selectedBookId', (string) $book->getKey())
+            ->assertSee('Ficha bibliográfica')
+            ->assertSee('Editorial Académica')
+            ->assertSee('Ingeniería de software')
+            ->assertSee('9781234567897')
+            ->assertDontSee('Editar datos');
+    }
+
+    public function test_catalog_uses_the_isbn_to_show_a_book_cover(): void
+    {
+        $student = User::factory()->create();
+        Book::factory()->create([
+            'title' => 'Libro con portada',
+            'isbn' => '978-1-23456-789-7',
+            'cover_url' => null,
+        ]);
+
+        $this->actingAs($student)->get('/catalogo')
+            ->assertSee('https://covers.openlibrary.org/b/isbn/9781234567897-L.jpg?default=false', false)
+            ->assertSee('Portada de Libro con portada');
     }
 
     public function test_student_reservation_is_sent_to_circulation_and_shown_in_their_catalog(): void

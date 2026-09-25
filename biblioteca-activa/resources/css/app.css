@@ -15,6 +15,7 @@
 }
 
 @layer base {
+    [x-cloak] { display: none !important; }
     html { scroll-behavior: smooth; }
     body { @apply bg-slate-50 text-slate-800 antialiased; }
     button, a, input, select { @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600; }

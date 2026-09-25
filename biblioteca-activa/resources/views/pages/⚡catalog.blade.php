@@ -30,6 +30,10 @@ new class extends Component
 
     public string $newProgram = 'General';
 
+    public string $coverUrl = '';
+
+    public ?string $selectedBookId = null;
+
     public ?string $editingBookId = null;
 
     public string $editTitle = '';
@@ -47,6 +51,8 @@ new class extends Component
     public string $editLearningUnit = '';
 
     public string $editProgram = '';
+
+    public string $editCoverUrl = '';
 
     public function updatedSearch(): void
     {
@@ -111,6 +117,31 @@ new class extends Component
             ->all();
     }
 
+    #[Computed]
+    public function selectedBook(): ?Book
+    {
+        if (! $this->selectedBookId) {
+            return null;
+        }
+
+        return Book::query()->find($this->selectedBookId);
+    }
+
+    public function viewBook(string $bookId): void
+    {
+        $book = Book::query()->findOrFail($bookId);
+        $this->authorize('view', $book);
+
+        $this->selectedBookId = (string) $book->getKey();
+        unset($this->selectedBook);
+    }
+
+    public function closeBookDetails(): void
+    {
+        $this->selectedBookId = null;
+        unset($this->selectedBook);
+    }
+
     public function reserve(string $bookId): void
     {
         abort_unless(auth()->user()->role->value === 'student', 403);
@@ -171,6 +202,8 @@ new class extends Component
         $this->editDeweyCode = (string) ($book->dewey_code ?? '');
         $this->editLearningUnit = (string) ($book->learning_unit ?? '');
         $this->editProgram = (string) ($book->program ?? 'General');
+        $this->editCoverUrl = (string) ($book->cover_url ?? '');
+        $this->closeBookDetails();
         $this->resetValidation();
     }
 
@@ -186,6 +219,7 @@ new class extends Component
             'editDeweyCode',
             'editLearningUnit',
             'editProgram',
+            'editCoverUrl',
         );
         $this->resetValidation();
     }
@@ -205,6 +239,7 @@ new class extends Component
             'editDeweyCode' => ['nullable', 'string', 'max:40'],
             'editLearningUnit' => ['nullable', 'string', 'max:180'],
             'editProgram' => ['required', 'string', 'max:120'],
+            'editCoverUrl' => ['nullable', 'url:http,https', 'max:2000'],
         ], [
             'editTitle.required' => 'El título es obligatorio.',
             'editAuthors.required' => 'Registra al menos un autor.',
@@ -212,6 +247,7 @@ new class extends Component
             'editPublicationYear.min' => 'El año debe ser igual o posterior a 1400.',
             'editPublicationYear.max' => 'El año no puede ser posterior al próximo año.',
             'editProgram.required' => 'El programa es obligatorio.',
+            'editCoverUrl.url' => 'La portada debe usar una dirección web válida con http o https.',
         ]);
 
         $searchText = Str::lower(Str::ascii(implode(' ', [
@@ -233,6 +269,7 @@ new class extends Component
             'dewey_code' => filled($data['editDeweyCode'] ?? null) ? $data['editDeweyCode'] : null,
             'learning_unit' => filled($data['editLearningUnit'] ?? null) ? $data['editLearningUnit'] : null,
             'program' => $data['editProgram'],
+            'cover_url' => filled($data['editCoverUrl'] ?? null) ? $data['editCoverUrl'] : null,
             'search_text' => $searchText,
         ]);
 
@@ -249,8 +286,14 @@ new class extends Component
             'author' => ['required', 'string', 'max:240'],
             'isbn' => ['nullable', 'string', 'max:20'],
             'newProgram' => ['required', 'string', 'max:120'],
+            'coverUrl' => ['nullable', 'url:http,https', 'max:2000'],
         ]);
-        $searchText = Str::lower(Str::ascii(implode(' ', $data)));
+        $searchText = Str::lower(Str::ascii(implode(' ', [
+            $data['title'],
+            $data['author'],
+            $data['isbn'] ?? '',
+            $data['newProgram'],
+        ])));
         $book = Book::query()->create([
             'source_key' => 'manual-'.Str::uuid(),
             'title' => $data['title'],
@@ -261,6 +304,7 @@ new class extends Component
             'dewey_code' => null,
             'learning_unit' => null,
             'program' => $data['newProgram'],
+            'cover_url' => filled($data['coverUrl'] ?? null) ? $data['coverUrl'] : null,
             'search_text' => $searchText,
             'total_copies' => 1,
             'available_copies' => 1,
@@ -275,7 +319,7 @@ new class extends Component
             'status' => 'available',
             'active' => true,
         ]);
-        $this->reset('title', 'author', 'isbn');
+        $this->reset('title', 'author', 'isbn', 'coverUrl');
         unset($this->books, $this->programs);
         session()->flash('message', 'Título agregado al catálogo.');
     }
@@ -354,10 +398,106 @@ new class extends Component
                 <div><label class="label" for="author">Autor</label><input id="author" class="field" wire:model="author">@error('author')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
                 <div><label class="label" for="isbn">ISBN</label><input id="isbn" class="field" wire:model="isbn"></div>
                 <div><label class="label" for="newProgram">Programa</label><input id="newProgram" class="field" wire:model="newProgram"></div>
+                <div class="md:col-span-2">
+                    <label class="label" for="coverUrl">URL de portada <span class="font-normal text-slate-500">(opcional)</span></label>
+                    <input id="coverUrl" class="field" type="url" wire:model="coverUrl" placeholder="https://ejemplo.com/portada.jpg" aria-describedby="coverUrl-help coverUrl-error">
+                    <p id="coverUrl-help" class="mt-1.5 text-sm text-slate-500">Si se deja vacío, intentaremos localizar la portada mediante el ISBN.</p>
+                    @error('coverUrl')<p id="coverUrl-error" class="mt-1.5 text-sm font-medium text-red-700">{{ $message }}</p>@enderror
+                </div>
                 <button class="btn-primary cursor-pointer md:col-span-2 md:justify-self-start" type="submit">Guardar título</button>
             </form>
         </details>
     @endcan
+
+    @if ($selectedBook = $this->selectedBook)
+        <div class="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.closeBookDetails()">
+            <button type="button" class="absolute inset-0 cursor-default bg-slate-950/70 backdrop-blur-sm" wire:click="closeBookDetails" aria-label="Cerrar detalles del libro"></button>
+            <section
+                class="relative max-h-[calc(100vh-2rem)] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="book-detail-title"
+                aria-describedby="book-detail-description"
+                wire:key="book-detail-{{ $selectedBook->getKey() }}"
+            >
+                <button type="button" class="absolute right-4 top-4 z-10 grid min-h-11 min-w-11 cursor-pointer place-items-center rounded-xl bg-white/95 text-slate-600 shadow-sm transition hover:bg-white hover:text-slate-950" wire:click="closeBookDetails" x-ref="closeDetails" x-init="$nextTick(() => $refs.closeDetails.focus())" aria-label="Cerrar detalles">
+                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+
+                <div class="grid md:grid-cols-[minmax(15rem,20rem)_1fr]">
+                    <div class="bg-slate-100 p-6 sm:p-8">
+                        <x-book-cover :book="$selectedBook" loading="eager" class="mx-auto aspect-[3/4] w-full max-w-64 rounded-2xl shadow-xl ring-1 ring-slate-900/10" />
+                    </div>
+
+                    <div class="flex flex-col p-6 sm:p-8 md:p-10">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span @class([
+                                'rounded-full px-3 py-1 text-xs font-bold',
+                                'bg-emerald-50 text-emerald-800' => $selectedBook->available_copies > 0,
+                                'bg-amber-50 text-amber-800' => $selectedBook->available_copies < 1,
+                            ])>{{ $selectedBook->available_copies > 0 ? 'Disponible' : 'Sin ejemplares' }}</span>
+                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ $selectedBook->program }}</span>
+                        </div>
+
+                        <p class="eyebrow mt-6">Ficha bibliográfica</p>
+                        <h2 id="book-detail-title" class="mt-2 font-display text-3xl font-bold leading-tight text-ink sm:text-4xl">{{ $selectedBook->title }}</h2>
+                        <p id="book-detail-description" class="mt-3 text-lg leading-7 text-slate-600">{{ $selectedBook->authorLine() }}</p>
+
+                        <dl class="mt-7 grid gap-x-8 gap-y-5 border-y border-slate-200 py-6 sm:grid-cols-2">
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Editorial</dt>
+                                <dd class="mt-1 font-semibold text-slate-900">{{ $selectedBook->publisher ?: 'No registrada' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Año de edición</dt>
+                                <dd class="mt-1 font-semibold text-slate-900">{{ $selectedBook->publication_year ?: 'No registrado' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">ISBN</dt>
+                                <dd class="mt-1 break-all font-semibold text-slate-900">{{ $selectedBook->isbn ?: 'No registrado' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Clasificación</dt>
+                                <dd class="mt-1 font-semibold text-slate-900">{{ $selectedBook->dewey_code ?: 'Sin clasificación' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Unidad de aprendizaje</dt>
+                                <dd class="mt-1 font-semibold text-slate-900">{{ $selectedBook->learning_unit ?: 'No registrada' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Ejemplares disponibles</dt>
+                                <dd class="mt-1 font-semibold text-slate-900">{{ $selectedBook->available_copies }} de {{ $selectedBook->total_copies }}</dd>
+                            </div>
+                        </dl>
+
+                        <footer class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                            @can('update', $selectedBook)
+                                <button type="button" class="btn-primary cursor-pointer gap-2" wire:click="editBook('{{ $selectedBook->getKey() }}')">
+                                    <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>
+                                    Editar datos
+                                </button>
+                            @endcan
+                            @if (auth()->user()->role->value === 'student')
+                                @php($isSelectedBookReserved = in_array((string) $selectedBook->getKey(), $this->reservedBookIds, true))
+                                <button
+                                    type="button"
+                                    class="btn-primary cursor-pointer"
+                                    wire:click="reserve('{{ $selectedBook->getKey() }}')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="reserve('{{ $selectedBook->getKey() }}')"
+                                    @disabled($isSelectedBookReserved)
+                                    aria-pressed="{{ $isSelectedBookReserved ? 'true' : 'false' }}"
+                                >
+                                    {{ $isSelectedBookReserved ? 'Reservación enviada' : 'Reservar título' }}
+                                </button>
+                            @endif
+                            <button type="button" class="btn-secondary cursor-pointer" wire:click="closeBookDetails">Cerrar</button>
+                        </footer>
+                    </div>
+                </div>
+            </section>
+        </div>
+    @endif
 
     @if ($editingBookId)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.cancelEditing()">
@@ -384,7 +524,7 @@ new class extends Component
                 <form wire:submit="updateBook" class="p-5 sm:p-7">
                     <p class="mb-5 text-sm text-slate-500">Los campos marcados con <span class="font-bold text-red-700">*</span> son obligatorios.</p>
 
-                    @if ($errors->hasAny(['editTitle', 'editAuthors', 'editIsbn', 'editPublisher', 'editPublicationYear', 'editDeweyCode', 'editLearningUnit', 'editProgram']))
+                    @if ($errors->hasAny(['editTitle', 'editAuthors', 'editIsbn', 'editPublisher', 'editPublicationYear', 'editDeweyCode', 'editLearningUnit', 'editProgram', 'editCoverUrl']))
                         <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800" role="alert">
                             Revisa los campos señalados antes de guardar los cambios.
                         </div>
@@ -431,6 +571,12 @@ new class extends Component
                             <input id="editProgram" class="field" wire:model="editProgram" aria-invalid="{{ $errors->has('editProgram') ? 'true' : 'false' }}" aria-describedby="editProgram-error">
                             @error('editProgram') <p id="editProgram-error" class="mt-1.5 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
                         </div>
+                        <div class="md:col-span-2">
+                            <label class="label" for="editCoverUrl">URL de portada <span class="font-normal text-slate-500">(opcional)</span></label>
+                            <input id="editCoverUrl" class="field" type="url" wire:model="editCoverUrl" placeholder="https://ejemplo.com/portada.jpg" aria-invalid="{{ $errors->has('editCoverUrl') ? 'true' : 'false' }}" aria-describedby="editCoverUrl-help editCoverUrl-error">
+                            <p id="editCoverUrl-help" class="mt-1.5 text-sm text-slate-500">Al dejarla vacía, la portada se buscará por ISBN.</p>
+                            @error('editCoverUrl') <p id="editCoverUrl-error" class="mt-1.5 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                        </div>
                     </div>
 
                     <footer class="mt-7 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
@@ -445,45 +591,40 @@ new class extends Component
         </div>
     @endif
 
-    <section class="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3" aria-label="Resultados">
+    <section class="mt-7 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 2xl:grid-cols-4" aria-label="Resultados del catálogo">
         @forelse ($this->books as $book)
-            <article class="card flex flex-col p-5" wire:key="book-{{ $book->getKey() }}">
-                <div class="flex items-start justify-between gap-4">
+            <article class="card group flex min-w-0 flex-col overflow-hidden transition duration-200 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lg motion-reduce:transform-none" wire:key="book-{{ $book->getKey() }}">
+                <button
+                    type="button"
+                    class="relative block cursor-pointer text-left focus-visible:z-10"
+                    wire:click="viewBook('{{ $book->getKey() }}')"
+                    aria-label="Ver detalles de {{ $book->title }}"
+                >
+                    <x-book-cover :book="$book" class="aspect-[3/4] w-full" />
                     <span @class([
-                        'rounded-full px-3 py-1 text-xs font-bold',
+                        'absolute left-2 top-2 rounded-full px-2.5 py-1 text-[0.6875rem] font-bold shadow-sm sm:left-3 sm:top-3 sm:text-xs',
                         'bg-emerald-50 text-emerald-800' => $book->available_copies > 0,
-                        'bg-amber-50 text-amber-800' => $book->available_copies < 1,
-                    ])>{{ $book->available_copies > 0 ? 'Disponible' : 'Sin ejemplares' }}</span>
-                    <span class="text-xs font-semibold text-slate-400">{{ $book->dewey_code ?: 'S/C' }}</span>
+                        'bg-amber-50 text-amber-900' => $book->available_copies < 1,
+                    ])>{{ $book->available_copies > 0 ? 'Disponible' : 'No disponible' }}</span>
+                    <span class="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-slate-950/80 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-sm transition group-hover:bg-brand-700 sm:bottom-3 sm:right-3">
+                        Ver ficha
+                        <svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </span>
+                </button>
+
+                <div class="flex flex-1 flex-col p-3 sm:p-5">
+                    <button type="button" class="cursor-pointer text-left" wire:click="viewBook('{{ $book->getKey() }}')">
+                        <h2 class="line-clamp-2 font-display text-base font-bold leading-snug text-ink group-hover:text-brand-700 sm:text-xl">{{ $book->title }}</h2>
+                        <p class="mt-2 line-clamp-2 text-xs leading-5 text-slate-600 sm:text-sm sm:leading-6">{{ $book->authorLine() }}</p>
+                    </button>
+                    <div class="mt-auto flex items-end justify-between gap-2 pt-4 text-xs sm:text-sm">
+                        <span class="line-clamp-1 font-semibold text-slate-500">{{ $book->program }}</span>
+                        <span class="shrink-0 font-bold text-slate-700" aria-label="{{ $book->available_copies }} de {{ $book->total_copies }} ejemplares disponibles">{{ $book->available_copies }}/{{ $book->total_copies }}</span>
+                    </div>
                 </div>
-                <h2 class="mt-4 font-display text-xl font-bold leading-snug text-ink">{{ $book->title }}</h2>
-                <p class="mt-2 text-sm leading-6 text-slate-600">{{ $book->authorLine() }}</p>
-                <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
-                    <div><dt class="text-slate-500">Programa</dt><dd class="mt-1 font-semibold">{{ $book->program }}</dd></div>
-                    <div><dt class="text-slate-500">Ejemplares</dt><dd class="mt-1 font-semibold">{{ $book->available_copies }} de {{ $book->total_copies }}</dd></div>
-                </dl>
-                @can('update', $book)
-                    <button type="button" class="btn-secondary mt-5 w-full cursor-pointer gap-2" wire:click="editBook('{{ $book->getKey() }}')">
-                        <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>
-                        Editar datos
-                    </button>
-                @endcan
-                @if (auth()->user()->role->value === 'student')
-                    @php($isReserved = in_array((string) $book->getKey(), $this->reservedBookIds, true))
-                    <button
-                        class="btn-secondary mt-5 w-full cursor-pointer"
-                        wire:click="reserve('{{ $book->getKey() }}')"
-                        wire:loading.attr="disabled"
-                        wire:target="reserve('{{ $book->getKey() }}')"
-                        @disabled($isReserved)
-                        aria-pressed="{{ $isReserved ? 'true' : 'false' }}"
-                    >
-                        {{ $isReserved ? 'Reservación enviada' : 'Reservar título' }}
-                    </button>
-                @endif
             </article>
         @empty
-            <div class="card p-10 text-center md:col-span-2 xl:col-span-3">
+            <div class="card col-span-full p-10 text-center">
                 <p class="font-display text-2xl font-bold">No encontramos coincidencias</p>
                 <p class="mt-2 text-slate-500">Prueba con menos palabras o cambia el programa.</p>
             </div>

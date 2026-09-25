@@ -23,6 +23,7 @@ class BookFactory extends Factory
             'dewey_code' => (string) fake()->randomFloat(2, 0, 999),
             'learning_unit' => 'Formación académica',
             'program' => 'General',
+            'cover_url' => null,
             'search_text' => Str::lower($title),
             'total_copies' => 1,
             'available_copies' => 1,
