@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,6 +17,7 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::post('/perfil', [ProfileController::class, 'update'])->name('profile.update');
     Route::livewire('/dashboard', 'pages::dashboard')->name('dashboard');
     Route::livewire('/catalogo', 'pages::catalog')->name('catalog');
     Route::livewire('/circulacion', 'pages::circulation')

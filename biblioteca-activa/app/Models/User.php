@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use MongoDB\Laravel\Auth\User as Authenticatable;
 
-#[Fillable(['name', 'email', 'password', 'student_code', 'role', 'status'])]
+#[Fillable(['name', 'first_name', 'last_name', 'email', 'password', 'avatar_path', 'student_code', 'role', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
