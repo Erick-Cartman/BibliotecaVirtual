@@ -26,6 +26,26 @@
                     <label class="flex items-center gap-3 text-sm text-slate-700"><input class="size-4 rounded border-slate-300 text-brand-600" type="checkbox" name="remember" value="1">Mantener la sesión iniciada</label>
                     <button class="btn-primary w-full" type="submit">Ingresar al panel</button>
                 </form>
+                <section aria-labelledby="demo-accounts-title" class="mt-7 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+                    <h2 id="demo-accounts-title" class="font-bold text-ink">Cuentas de prueba de Yahir</h2>
+                    <dl class="mt-4 space-y-4">
+                        <div>
+                            <dt class="font-semibold">Estudiante</dt>
+                            <dd class="break-all">yahir@biblioteca.test</dd>
+                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
+                        </div>
+                        <div>
+                            <dt class="font-semibold">Administrador</dt>
+                            <dd class="break-all">yahir.admin@biblioteca.test</dd>
+                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
+                        </div>
+                        <div>
+                            <dt class="font-semibold">Bibliotecario</dt>
+                            <dd class="break-all">yahir.bibliotecario@biblioteca.test</dd>
+                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
+                        </div>
+                    </dl>
+                </section>
                 <p class="mt-7 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">¿Necesitas acceso? Solicítalo directamente al personal de biblioteca.</p>
             </div>
         </section>
