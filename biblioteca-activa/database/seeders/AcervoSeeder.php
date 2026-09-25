@@ -17,10 +17,15 @@ class AcervoSeeder extends Seeder
             true,
             flags: JSON_THROW_ON_ERROR,
         );
+        $coverOverridesPath = database_path('seeders/data/book_covers.json');
+        $coverOverrides = File::exists($coverOverridesPath)
+            ? json_decode(File::get($coverOverridesPath), true, flags: JSON_THROW_ON_ERROR)
+            : [];
 
         foreach ($records as $record) {
             $locations = $record['locations'];
             unset($record['locations']);
+            $record['cover_url'] = $coverOverrides[$record['source_key']] ?? ($record['cover_url'] ?? null);
 
             $book = Book::query()->updateOrCreate(
                 ['source_key' => $record['source_key']],
