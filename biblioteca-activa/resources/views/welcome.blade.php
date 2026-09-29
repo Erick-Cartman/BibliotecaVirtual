@@ -32,70 +32,75 @@
                         <a href="#servicios" class="btn-secondary border-slate-600 bg-transparent text-white hover:border-white hover:text-white">Conocer servicios</a>
                     </div>
                 </div>
+                @php($featuredBook = $featuredBooks->first())
                 <div
                     class="card self-center overflow-hidden border-slate-700 bg-slate-900/80 p-5 backdrop-blur sm:p-6"
-                    data-book-carousel
+                    data-book-viewer
                     role="region"
-                    aria-roledescription="carrusel"
-                    aria-labelledby="featured-books-title"
+                    aria-labelledby="featured-book-title"
                 >
                     <div class="flex items-start justify-between gap-4">
                         <div>
-                            <p class="text-sm font-semibold text-indigo-300">Visor del acervo</p>
-                            <h2 id="featured-books-title" class="mt-2 font-display text-2xl font-bold text-white">Diez libros para descubrir</h2>
-                            <p class="mt-2 max-w-sm text-sm leading-6 text-slate-400">Una selección con portada para comenzar a explorar la colección.</p>
+                            <p class="text-sm font-semibold text-indigo-300">Visor 3D del acervo</p>
+                            <h2 id="featured-book-title" class="mt-2 font-display text-2xl font-bold text-white">LIBRO VIRTUAL</h2>
+                            <p class="mt-2 max-w-sm text-sm leading-6 text-slate-400">Una selección real de la base de datos girando sobre su propio eje.</p>
                         </div>
-                        <span class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-100">{{ $featuredBooks->count() }} títulos</span>
+                        @if ($featuredBook)
+                            <span class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-100">1 selección</span>
+                        @endif
                     </div>
 
-                    @if ($featuredBooks->isNotEmpty())
-                        <div id="featured-books-carousel" class="mt-6 overflow-hidden" data-book-viewport tabindex="0" aria-label="Libros destacados. Usa las flechas izquierda y derecha para avanzar.">
-                            <div class="flex gap-3 will-change-transform" data-book-track>
-                                @foreach ($featuredBooks as $book)
-                                    <article class="w-[8.5rem] shrink-0" data-book-slide>
-                                        <a
-                                            href="{{ auth()->check() ? route('catalog') : route('login') }}"
-                                            class="group block rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                                            aria-label="Consultar {{ $book->title }} en el catálogo"
-                                        >
-                                            <div class="relative aspect-[2/3] overflow-hidden rounded-2xl bg-slate-800 shadow-lg ring-1 ring-white/10">
-                                                <x-book-cover :book="$book" loading="eager" class="size-full transition duration-300 group-hover:scale-[1.02]" />
-                                                <span class="absolute inset-x-2 bottom-2 rounded-lg bg-slate-950/80 px-2 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-300">Disponible</span>
-                                            </div>
-                                            <p class="mt-3 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-white group-hover:text-indigo-200">{{ $book->title }}</p>
-                                            <p class="mt-1 line-clamp-1 text-xs text-slate-400">{{ $book->authorLine() ?: 'Autor no registrado' }}</p>
-                                        </a>
-                                    </article>
-                                @endforeach
+                    @if ($featuredBook)
+                        <div class="book-stage mt-6" data-book-stage aria-describedby="featured-book-description">
+                            <div class="book-stage__grid" aria-hidden="true"></div>
+                            <div class="book-stage__glow" aria-hidden="true"></div>
+                            <div class="book-stage__shadow" aria-hidden="true"></div>
+                            <div
+                                class="book-3d"
+                                data-book-3d
+                                role="img"
+                                aria-label="Vista 3D de {{ $featuredBook->title }} girando 360 grados"
+                            >
+                                <div class="book-3d__face book-3d__back" aria-hidden="true">
+                                    <span class="book-3d__back-mark">Biblioteca<br>Activa</span>
+                                </div>
+                                <div class="book-3d__face book-3d__spine" aria-hidden="true">
+                                    <span>{{ $featuredBook->title }}</span>
+                                </div>
+                                <div class="book-3d__face book-3d__pages book-3d__pages--top" aria-hidden="true"></div>
+                                <div class="book-3d__face book-3d__pages book-3d__pages--bottom" aria-hidden="true"></div>
+                                <div class="book-3d__face book-3d__pages book-3d__pages--edge" aria-hidden="true"></div>
+                                <div class="book-3d__face book-3d__front">
+                                    <x-book-cover :book="$featuredBook" loading="eager" class="size-full rounded-[1.15rem] shadow-2xl ring-1 ring-white/15" />
+                                    <span class="absolute inset-x-3 bottom-3 rounded-lg bg-slate-950/80 px-2 py-1.5 text-center text-[0.625rem] font-bold uppercase tracking-[0.16em] text-emerald-300 backdrop-blur-sm">Disponible</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mt-5 flex items-center justify-between gap-4">
-                            <p class="text-xs leading-5 text-slate-400" data-book-carousel-status aria-live="polite"></p>
-                            <div class="flex shrink-0 gap-2">
-                                <button
-                                    type="button"
-                                    class="grid min-h-11 min-w-11 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-white transition hover:border-indigo-300 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                                    data-book-carousel-prev
-                                    aria-controls="featured-books-carousel"
-                                    aria-label="Mostrar libros anteriores"
-                                >
-                                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m14 18-6-6 6-6"/></svg>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="grid min-h-11 min-w-11 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-white transition hover:border-indigo-300 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                                    data-book-carousel-next
-                                    aria-controls="featured-books-carousel"
-                                    aria-label="Mostrar más libros"
-                                >
-                                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m10 18 6-6-6-6"/></svg>
-                                </button>
+                        <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-indigo-300">Selección de hoy</p>
+                                <a
+                                    href="{{ auth()->check() ? route('catalog') : route('login') }}"
+                                    class="mt-1 block truncate font-display text-xl font-bold text-white underline-offset-4 transition hover:text-indigo-200 hover:underline focus-visible:ring-2 focus-visible:ring-indigo-300"
+                                    aria-label="Consultar {{ $featuredBook->title }} en el catálogo"
+                                >{{ $featuredBook->title }}</a>
+                                <p class="mt-1 truncate text-sm text-slate-400">{{ $featuredBook->authorLine() ?: 'Autor no registrado' }}</p>
                             </div>
+                            <button
+                                type="button"
+                                class="btn-secondary min-h-11 shrink-0 border-slate-600 bg-slate-800 text-white hover:border-indigo-300 hover:bg-slate-700 hover:text-white"
+                                data-book-toggle
+                                aria-pressed="false"
+                                aria-label="Pausar la rotación 3D"
+                            >
+                                Pausar giro
+                            </button>
                         </div>
+                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-slate-400">El libro rota automáticamente. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
                     @else
                         <div class="mt-6 rounded-2xl border border-dashed border-slate-700 px-5 py-8 text-sm leading-6 text-slate-400">
-                            Las portadas aparecerán aquí cuando el acervo esté disponible.
+                            El visor 3D aparecerá cuando el acervo esté disponible.
                         </div>
                     @endif
                 </div>

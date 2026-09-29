@@ -135,6 +135,21 @@ class CatalogTest extends TestCase
             ->assertSee('Portada de Libro con portada');
     }
 
+    public function test_catalog_shows_a_generic_cover_when_a_book_has_no_cover(): void
+    {
+        $student = User::factory()->create();
+        Book::factory()->create([
+            'title' => 'Libro sin portada',
+            'isbn' => null,
+            'cover_url' => null,
+        ]);
+
+        $this->actingAs($student)->get('/catalogo')
+            ->assertOk()
+            ->assertSee('Portada genérica')
+            ->assertSee('Portada genérica de Libro sin portada');
+    }
+
     public function test_student_reservation_is_sent_to_circulation_and_shown_in_their_catalog(): void
     {
         $student = User::factory()->create(['student_code' => 'EST-123']);

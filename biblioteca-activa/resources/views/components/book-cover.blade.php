@@ -4,6 +4,7 @@
 ])
 
 @php($coverUrl = $book->coverUrl())
+@php($coverHue = 200 + (abs(crc32((string) ($book->source_key ?: $book->title))) % 140))
 
 <div
     x-data="{ coverFailed: false }"
@@ -23,16 +24,18 @@
 
     <div
         @if ($coverUrl) x-cloak x-show="coverFailed" @endif
-        class="absolute inset-0 flex flex-col items-center justify-center gap-3 p-5 text-center"
+        class="book-cover-fallback absolute inset-0 flex flex-col items-center justify-center gap-3 p-5 text-center"
+        style="--book-cover-hue: {{ $coverHue }};"
         role="img"
-        aria-label="Portada no disponible para {{ $book->title }}"
+        aria-label="Portada genérica de {{ $book->title }}"
     >
-        <span class="grid size-14 place-items-center rounded-2xl bg-white/80 text-brand-700 shadow-sm" aria-hidden="true">
+        <span class="book-cover-fallback__badge">Portada genérica</span>
+        <span class="book-cover-fallback__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" class="size-8 fill-none stroke-current" stroke-width="1.6">
                 <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/>
             </svg>
         </span>
-        <span class="line-clamp-4 font-display text-lg font-bold leading-snug text-ink">{{ $book->title }}</span>
-        <span class="text-xs font-bold uppercase tracking-[0.14em] text-brand-700">Biblioteca Activa</span>
+        <span class="book-cover-fallback__title">{{ $book->title }}</span>
+        <span class="book-cover-fallback__footer">Biblioteca Activa</span>
     </div>
 </div>
