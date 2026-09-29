@@ -3,6 +3,7 @@
 use App\Models\Book;
 use App\Models\Copy;
 use App\Models\Reservation;
+use App\Models\User;
 use App\ReservationStatus;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -53,6 +54,9 @@ new class extends Component
     public string $editProgram = '';
 
     public string $editCoverUrl = '';
+
+    /** @var array<string, string>|null */
+    public ?array $reservationConfirmation = null;
 
     public function updatedSearch(): void
     {
@@ -142,19 +146,25 @@ new class extends Component
         unset($this->selectedBook);
     }
 
+    public function closeReservationConfirmation(): void
+    {
+        $this->reservationConfirmation = null;
+    }
+
     public function reserve(string $bookId): void
     {
         abort_unless(auth()->user()->role->value === 'student', 403);
         $book = Book::query()->findOrFail($bookId);
+        /** @var User $student */
         $student = auth()->user();
-        $exists = Reservation::query()
+        $reservation = Reservation::query()
             ->where('book_id', $bookId)
             ->where('user_id', (string) $student->getKey())
             ->whereIn('status', [ReservationStatus::Pending->value, ReservationStatus::Ready->value])
-            ->exists();
+            ->first();
 
-        if (! $exists) {
-            Reservation::query()->create([
+        if ($reservation === null) {
+            $reservation = Reservation::query()->create([
                 'book_id' => $bookId,
                 'user_id' => (string) $student->getKey(),
                 'status' => ReservationStatus::Pending,
@@ -166,13 +176,31 @@ new class extends Component
             ]);
         }
 
+        $this->reservationConfirmation = $this->buildReservationConfirmation($reservation, $book, $student);
         unset($this->myReservations, $this->reservedBookIds);
+        $exists = ! $reservation->wasRecentlyCreated;
         session()->flash(
             'message',
             $exists
                 ? 'Ya tienes una reservación activa para este título.'
                 : 'Reservación enviada a Circulación. El personal bibliotecario la preparará.',
         );
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function buildReservationConfirmation(Reservation $reservation, Book $book, User $student): array
+    {
+        return [
+            'reservation_id' => (string) $reservation->getKey(),
+            'student_name' => (string) $student->name,
+            'student_email' => (string) $student->email,
+            'student_code' => (string) ($student->student_code ?: 'Sin codigo'),
+            'book_title' => (string) $book->title,
+            'book_isbn' => (string) ($book->isbn ?: 'No registrado'),
+            'reserved_at' => $reservation->reserved_at?->format('d/m/Y H:i') ?? now()->format('d/m/Y H:i'),
+        ];
     }
 
     public function cancelReservation(string $reservationId): void
@@ -341,6 +369,53 @@ new class extends Component
         </div>
     @endif
 
+    @if ($reservationConfirmation)
+        <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.closeReservationConfirmation()">
+            <button type="button" class="absolute inset-0 cursor-default bg-slate-950/70 backdrop-blur-sm" wire:click="closeReservationConfirmation" aria-label="Cerrar confirmación de reservación"></button>
+            <section class="relative max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="reservation-qr-title">
+                <header class="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5 sm:px-8">
+                    <div>
+                        <p class="eyebrow">Reserva confirmada</p>
+                        <h2 id="reservation-qr-title" class="mt-1 font-display text-3xl font-bold text-ink">Código de reservación</h2>
+                        <p class="mt-2 text-sm text-slate-600">Guarda o muestra este código al personal bibliotecario.</p>
+                    </div>
+                    <button type="button" class="grid min-h-11 min-w-11 cursor-pointer place-items-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" wire:click="closeReservationConfirmation" aria-label="Cerrar código de reservación">
+                        <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                    </button>
+                </header>
+                <div class="grid gap-6 p-6 sm:p-8 md:grid-cols-[minmax(16rem,18rem)_1fr] md:items-start">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm" wire:ignore>
+                        @php
+                            $reservationQrPayload = implode("\n", [
+                                'Biblioteca Activa',
+                                'Reservacion: '.$reservationConfirmation['reservation_id'],
+                                'Alumno: '.$reservationConfirmation['student_name'],
+                                'Correo: '.$reservationConfirmation['student_email'],
+                                'Codigo de alumno: '.$reservationConfirmation['student_code'],
+                                'Libro: '.$reservationConfirmation['book_title'],
+                                'ISBN: '.$reservationConfirmation['book_isbn'],
+                                'Fecha: '.$reservationConfirmation['reserved_at'],
+                            ]);
+                        @endphp
+                        <canvas x-ref="reservationQr" class="mx-auto size-64 max-w-full" x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($reservationQrPayload), { width: 256, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#172033', light: '#ffffff' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });" aria-label="Código QR con los datos de la reservación"></canvas>
+                        <p class="mt-3 text-xs font-semibold text-slate-500">Escanéalo para consultar esta reserva.</p>
+                    </div>
+                    <dl class="divide-y divide-slate-100 rounded-2xl border border-slate-200">
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Alumno</dt><dd class="mt-1 font-semibold text-slate-900">{{ $reservationConfirmation['student_name'] }}</dd></div>
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Correo</dt><dd class="mt-1 break-all font-semibold text-slate-900">{{ $reservationConfirmation['student_email'] }}</dd></div>
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Código de alumno</dt><dd class="mt-1 font-semibold text-slate-900">{{ $reservationConfirmation['student_code'] }}</dd></div>
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Libro</dt><dd class="mt-1 font-semibold text-slate-900">{{ $reservationConfirmation['book_title'] }}</dd></div>
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">ISBN</dt><dd class="mt-1 font-semibold text-slate-900">{{ $reservationConfirmation['book_isbn'] }}</dd></div>
+                        <div class="px-4 py-3"><dt class="text-xs font-bold uppercase tracking-wider text-slate-500">Fecha</dt><dd class="mt-1 font-semibold text-slate-900">{{ $reservationConfirmation['reserved_at'] }}</dd></div>
+                    </dl>
+                </div>
+                <footer class="border-t border-slate-200 px-6 py-5 sm:px-8">
+                    <button type="button" class="btn-primary w-full cursor-pointer" wire:click="closeReservationConfirmation">Entendido</button>
+                </footer>
+            </section>
+        </div>
+    @endif
+
     @if (auth()->user()->role->value === 'student')
         <section class="card mt-7 overflow-hidden" aria-labelledby="my-reservations-title">
             <div class="border-b border-slate-200 bg-brand-50 px-5 py-4 sm:px-6">
@@ -350,11 +425,12 @@ new class extends Component
             </div>
             <div class="divide-y divide-slate-100">
                 @forelse ($this->myReservations as $reservation)
-                    <article class="grid gap-3 px-5 py-4 sm:grid-cols-[1fr_auto] sm:items-center sm:px-6" wire:key="my-reservation-{{ $reservation->getKey() }}">
+                    <article class="grid gap-3 px-5 py-4 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:px-6" wire:key="my-reservation-{{ $reservation->getKey() }}">
                         <div>
                             <p class="font-semibold text-slate-900">{{ $reservation->book_title }}</p>
                             <p class="mt-1 text-sm text-slate-500">{{ $reservation->status->label() }} · {{ $reservation->reserved_at?->format('d/m/Y H:i') }}</p>
                         </div>
+                        <x-reservation-qr :reservation="$reservation" />
                         @if ($reservation->status === ReservationStatus::Pending)
                             <button type="button" class="btn-secondary cursor-pointer px-4" wire:click="cancelReservation('{{ $reservation->getKey() }}')">Cancelar</button>
                         @else

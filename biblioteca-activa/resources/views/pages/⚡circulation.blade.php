@@ -210,6 +210,7 @@ new class extends Component
             $book = $books->get((string) $reservation->book_id);
             $reservation->setAttribute('student_name_display', $reservation->student_name ?: $user?->name ?: 'Estudiante');
             $reservation->setAttribute('student_code_display', $reservation->student_code ?: $user?->student_code ?: 'Sin código');
+            $reservation->setAttribute('student_email_display', $user?->email ?: '');
             $reservation->setAttribute('available_copies_display', (int) ($book?->available_copies ?? 0));
         });
     }
@@ -346,7 +347,7 @@ new class extends Component
 
         <div class="divide-y divide-slate-100">
             @forelse ($this->pendingReservations as $reservation)
-                <article class="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center" wire:key="reservation-{{ $reservation->getKey() }}">
+                <article class="grid gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[1fr_auto_auto] lg:items-center" wire:key="reservation-{{ $reservation->getKey() }}">
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
                             <h3 class="font-semibold text-slate-900">{{ $reservation->book_title }}</h3>
@@ -361,6 +362,7 @@ new class extends Component
                         <p class="mt-1 text-sm text-slate-600">{{ $reservation->student_name_display }} · {{ $reservation->student_code_display }}</p>
                         <p class="mt-1 text-xs text-slate-400">Solicitada {{ $reservation->reserved_at?->format('d/m/Y H:i') }}</p>
                     </div>
+                    <x-reservation-qr :reservation="$reservation" />
                     <div class="flex flex-wrap gap-2">
                         <button
                             type="button"

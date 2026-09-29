@@ -64,6 +64,7 @@ class CirculationTest extends TestCase
             ->assertSee('Historia de México')
             ->assertSee('EST-RESERVA')
             ->assertSee('1 disponibles')
+            ->assertSee('reservation-qr-', false)
             ->call('prepareReservation', (string) $reservation->getKey())
             ->assertSet('barcode', $copy->barcode)
             ->assertSet('studentCode', 'EST-RESERVA')

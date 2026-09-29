@@ -1,3 +1,8 @@
+import QRCode from 'qrcode';
+
+window.QRCode = QRCode;
+window.dispatchEvent(new CustomEvent('qrcode:ready'));
+
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 document.querySelectorAll('[data-book-viewer]').forEach((viewer) => {

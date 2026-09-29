@@ -160,7 +160,11 @@ class CatalogTest extends TestCase
             ->call('reserve', (string) $book->getKey())
             ->assertSee('Reservación enviada a Circulación')
             ->assertSee('Introducción a la administración')
-            ->assertSee('Pendiente');
+            ->assertSee('Pendiente')
+            ->assertSet('reservationConfirmation.book_title', $book->title)
+            ->assertSet('reservationConfirmation.student_email', $student->email)
+            ->assertSee('reservation-qr-title', false)
+            ->assertSee('reservation-qr-', false);
 
         $reservation = Reservation::query()->firstOrFail();
         $this->assertSame((string) $student->getKey(), (string) $reservation->user_id);
