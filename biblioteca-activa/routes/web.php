@@ -6,12 +6,31 @@ use App\Models\Book;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    $defaultBook = Book::query()
+        ->where('source_key', 'demo-el-principito')
+        ->where('active', true)
+        ->first();
+
     $featuredBooks = Book::query()
         ->where('active', true)
         ->whereNotNull('cover_url')
+        ->where('cover_url', '!=', '')
+        ->where('source_key', '!=', 'demo-el-principito')
         ->orderBy('title')
-        ->limit(10)
+        ->limit(9)
         ->get();
+
+    if ($defaultBook) {
+        $featuredBooks = collect([$defaultBook])->concat($featuredBooks);
+    }
+
+    if ($featuredBooks->isEmpty()) {
+        $featuredBooks = Book::query()
+            ->where('active', true)
+            ->orderBy('title')
+            ->limit(10)
+            ->get();
+    }
 
     return view('welcome', compact('featuredBooks'));
 })->name('home');

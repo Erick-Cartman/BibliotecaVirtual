@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DemoUsersSeeder::class,
             AcervoSeeder::class,
+            DemoFeaturedBookSeeder::class,
         ]);
     }
 }

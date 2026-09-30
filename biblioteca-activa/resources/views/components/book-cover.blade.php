@@ -7,13 +7,11 @@
 @php($coverHue = 200 + (abs(crc32((string) ($book->source_key ?: $book->title))) % 140))
 
 <div
-    x-data="{ coverFailed: false }"
     {{ $attributes->class(['relative isolate overflow-hidden bg-gradient-to-br from-brand-100 via-white to-amber-100']) }}
 >
     @if ($coverUrl)
         <img
-            x-show="! coverFailed"
-            x-on:error="coverFailed = true"
+            onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
             src="{{ $coverUrl }}"
             alt="Portada de {{ $book->title }}"
             class="absolute inset-0 size-full object-cover"
@@ -23,7 +21,7 @@
     @endif
 
     <div
-        @if ($coverUrl) x-cloak x-show="coverFailed" @endif
+        @if ($coverUrl) hidden @endif
         class="book-cover-fallback absolute inset-0 flex flex-col items-center justify-center gap-3 p-5 text-center"
         style="--book-cover-hue: {{ $coverHue }};"
         role="img"
