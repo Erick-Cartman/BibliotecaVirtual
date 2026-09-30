@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\CreateLoan;
+use App\Actions\DeleteLoan;
 use App\Actions\ReturnLoan;
 use App\CopyStatus;
 use App\LoanStatus;
@@ -185,6 +186,19 @@ new class extends Component
         $this->reset('returnBarcode');
         unset($this->activeLoans);
         session()->flash('message', 'Devolución registrada correctamente.');
+    }
+
+    public function deleteLoan(string $loanId): void
+    {
+        $loan = Loan::query()
+            ->whereKey($loanId)
+            ->whereIn('status', [LoanStatus::Active->value, LoanStatus::Overdue->value])
+            ->firstOrFail();
+
+        app(DeleteLoan::class)->handle($loan, auth()->user());
+
+        unset($this->activeLoans);
+        session()->flash('message', 'Préstamo devuelto correctamente.');
     }
 
     #[Computed]
@@ -392,7 +406,7 @@ new class extends Component
         <div class="overflow-x-auto">
             <table class="w-full min-w-[700px] text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
-                    <tr><th class="px-6 py-3">Ejemplar</th><th class="px-6 py-3">Título</th><th class="px-6 py-3">Usuario</th><th class="px-6 py-3">Vence</th><th class="px-6 py-3">Estado</th></tr>
+                    <tr><th class="px-6 py-3">Ejemplar</th><th class="px-6 py-3">Título</th><th class="px-6 py-3">Usuario</th><th class="px-6 py-3">Vence</th><th class="px-6 py-3">Estado</th><th class="px-6 py-3 text-right">Acción</th></tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($this->activeLoans as $loan)
@@ -402,9 +416,21 @@ new class extends Component
                             <td class="px-6 py-4">{{ $loan->user_name }}</td>
                             <td class="px-6 py-4">{{ $loan->due_at->format('d/m/Y') }}</td>
                             <td class="px-6 py-4"><span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-brand-700">{{ $loan->status->value === 'overdue' ? 'Vencido' : 'Activo' }}</span></td>
+                            <td class="px-6 py-4 text-right">
+                                @if (auth()->user()->canManageLibrary())
+                                    <button
+                                        type="button"
+                                        class="cursor-pointer text-sm font-bold text-red-700 hover:text-red-900"
+                                        wire:click="deleteLoan('{{ $loan->getKey() }}')"
+                                        wire:confirm="¿Seguro que deseas devolver este préstamo? El ejemplar volverá a estar disponible."
+                                    >
+                                        Devolver
+                                    </button>
+                                @endif
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-6 py-10 text-center text-slate-500">No hay préstamos activos.</td></tr>
+                        <tr><td colspan="6" class="px-6 py-10 text-center text-slate-500">No hay préstamos activos.</td></tr>
                     @endforelse
                 </tbody>
             </table>

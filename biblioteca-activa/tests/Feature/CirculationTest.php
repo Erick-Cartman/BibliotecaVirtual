@@ -92,4 +92,33 @@ class CirculationTest extends TestCase
         $this->assertSame(LoanStatus::Returned, $returned->status);
         $this->assertSame(CopyStatus::Available, $copy->refresh()->status);
     }
+
+    public function test_librarian_and_admin_can_delete_active_loans(): void
+    {
+        foreach ([User::factory()->librarian()->create(), User::factory()->admin()->create()] as $operator) {
+            $book = Book::factory()->create(['available_copies' => 0]);
+            $copy = Copy::factory()->create([
+                'book_id' => (string) $book->getKey(),
+                'status' => CopyStatus::Loaned,
+            ]);
+            $student = User::factory()->create();
+            $loan = Loan::factory()->create([
+                'copy_id' => (string) $copy->getKey(),
+                'book_id' => (string) $book->getKey(),
+                'user_id' => (string) $student->getKey(),
+                'operator_id' => (string) $operator->getKey(),
+                'copy_barcode' => $copy->barcode,
+            ]);
+
+            Livewire::actingAs($operator)
+                ->test('pages::circulation')
+                ->assertSee('Devolver')
+                ->call('deleteLoan', (string) $loan->getKey())
+                ->assertHasNoErrors();
+
+            $this->assertFalse(Loan::query()->whereKey($loan->getKey())->exists());
+            $this->assertSame(CopyStatus::Available, $copy->refresh()->status);
+            $this->assertSame(1, $book->refresh()->available_copies);
+        }
+    }
 }
