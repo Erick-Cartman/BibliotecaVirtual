@@ -25,11 +25,22 @@ class User extends Authenticatable
 
     protected static function booted(): void
     {
-        static::creating(function (User $user): void {
+        static::saving(function (User $user): void {
             if ($user->role === UserRole::Student && blank($user->student_code)) {
                 $user->student_code = static::nextStudentCode();
             }
         });
+    }
+
+    public static function backfillMissingStudentCodes(): void
+    {
+        static::query()
+            ->where('role', UserRole::Student->value)
+            ->get()
+            ->filter(fn (User $student): bool => blank($student->student_code))
+            ->each(function (User $student): void {
+                $student->forceFill(['student_code' => static::nextStudentCode()])->saveQuietly();
+            });
     }
 
     public static function nextStudentCode(): string
