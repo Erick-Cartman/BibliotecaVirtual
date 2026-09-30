@@ -176,6 +176,7 @@ new class extends Component
             ]);
         }
 
+        $this->closeBookDetails();
         $this->reservationConfirmation = $this->buildReservationConfirmation($reservation, $book, $student);
         unset($this->myReservations, $this->reservedBookIds);
         $exists = ! $reservation->wasRecentlyCreated;

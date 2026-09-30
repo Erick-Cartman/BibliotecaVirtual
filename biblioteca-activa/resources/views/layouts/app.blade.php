@@ -92,6 +92,12 @@
                     <dt class="text-sm font-semibold text-slate-500">Correo</dt>
                     <dd class="break-all font-medium text-slate-900">{{ $profileUser->email }}</dd>
                 </div>
+                @if($profileUser->role->value === 'student')
+                    <div class="grid gap-1 px-4 py-3 sm:grid-cols-[9rem_1fr] sm:items-center">
+                        <dt class="text-sm font-semibold text-slate-500">Código de estudiante</dt>
+                        <dd class="whitespace-nowrap font-mono font-bold tracking-wide text-slate-900">{{ $profileUser->student_code ?: 'Pendiente de asignación' }}</dd>
+                    </div>
+                @endif
                 <div class="grid gap-1 px-4 py-3 sm:grid-cols-[9rem_1fr] sm:items-center">
                     <dt class="text-sm font-semibold text-slate-500">Contraseña</dt>
                     <dd class="font-medium tracking-widest text-slate-900">••••••••</dd>

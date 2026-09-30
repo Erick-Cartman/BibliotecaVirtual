@@ -23,6 +23,39 @@ class User extends Authenticatable
 
     protected $table = 'users';
 
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if ($user->role === UserRole::Student && blank($user->student_code)) {
+                $user->student_code = static::nextStudentCode();
+            }
+        });
+    }
+
+    public static function nextStudentCode(): string
+    {
+        $highestNumber = (int) static::query()
+            ->where('role', UserRole::Student->value)
+            ->get(['student_code'])
+            ->map(fn (User $student): int => self::studentCodeNumber($student->student_code))
+            ->max();
+
+        do {
+            $studentCode = sprintf('EST-%03d', ++$highestNumber);
+        } while (static::query()->where('student_code', $studentCode)->exists());
+
+        return $studentCode;
+    }
+
+    private static function studentCodeNumber(?string $studentCode): int
+    {
+        if (preg_match('/^EST-(\d+)$/', trim((string) $studentCode), $matches) !== 1) {
+            return 0;
+        }
+
+        return (int) $matches[1];
+    }
+
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);

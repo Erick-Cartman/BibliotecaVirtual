@@ -157,12 +157,16 @@ class CatalogTest extends TestCase
 
         Livewire::actingAs($student)
             ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertSet('selectedBookId', (string) $book->getKey())
             ->call('reserve', (string) $book->getKey())
             ->assertSee('Reservación enviada a Circulación')
             ->assertSee('Introducción a la administración')
             ->assertSee('Pendiente')
             ->assertSet('reservationConfirmation.book_title', $book->title)
             ->assertSet('reservationConfirmation.student_email', $student->email)
+            ->assertSet('selectedBookId', null)
+            ->assertDontSee('book-detail-title', false)
             ->assertSee('reservation-qr-title', false)
             ->assertSee('reservation-qr-', false);
 
