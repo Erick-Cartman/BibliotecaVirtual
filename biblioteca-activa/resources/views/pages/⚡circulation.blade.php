@@ -336,11 +336,14 @@ new class extends Component
         <form wire:submit="returnLoan" class="card p-6">
             <p class="eyebrow">Entrada</p>
             <h2 class="mt-2 font-display text-2xl font-bold">Registrar devolución</h2>
-            <div class="mt-5">
-                <label class="label" for="returnBarcode">Código del ejemplar</label>
-                <input id="returnBarcode" class="field uppercase" wire:model="returnBarcode" placeholder="BA-XXXXXXXX-001" autocomplete="off">
-                @error('returnBarcode') <p class="mt-1 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
-            </div>
+            <details class="mt-5 rounded-xl border border-slate-200 p-4">
+                <summary class="min-h-11 cursor-pointer py-2 font-semibold text-brand-700">También puedo ingresar o escanear el código</summary>
+                <div class="mt-3">
+                    <label class="label" for="returnBarcode">Código del ejemplar</label>
+                    <input id="returnBarcode" class="field uppercase" wire:model="returnBarcode" placeholder="BA-XXXXXXXX-001" autocomplete="off">
+                    @error('returnBarcode') <p class="mt-1 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
+            </details>
             <button class="btn-secondary mt-5 cursor-pointer" type="submit" wire:loading.attr="disabled" wire:target="returnLoan">Confirmar devolución</button>
         </form>
     </section>

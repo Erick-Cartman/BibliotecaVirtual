@@ -29,6 +29,12 @@ new class extends Component
 
     public string $isbn = '';
 
+    public string $newPublicationYear = '';
+
+    public string $newDeweyCode = '';
+
+    public string $newCopyCount = '1';
+
     public string $newProgram = 'General';
 
     public string $coverUrl = '';
@@ -313,14 +319,32 @@ new class extends Component
         $data = $this->validate([
             'title' => ['required', 'string', 'max:240'],
             'author' => ['required', 'string', 'max:240'],
-            'isbn' => ['nullable', 'string', 'max:20'],
+            'isbn' => ['required', 'string', 'max:20'],
+            'newPublicationYear' => ['required', 'integer', 'min:1400', 'max:'.(now()->year + 1)],
+            'newDeweyCode' => ['required', 'string', 'max:40'],
+            'newCopyCount' => ['required', 'integer', 'min:1', 'max:50'],
             'newProgram' => ['required', 'string', 'max:120'],
             'coverUrl' => ['nullable', 'url:http,https', 'max:2000'],
+        ], [
+            'isbn.required' => 'El ISBN es obligatorio.',
+            'newPublicationYear.required' => 'El año de edición es obligatorio.',
+            'newPublicationYear.integer' => 'El año debe ser un número entero.',
+            'newPublicationYear.min' => 'El año debe ser igual o posterior a 1400.',
+            'newPublicationYear.max' => 'El año no puede ser posterior al próximo año.',
+            'newDeweyCode.required' => 'El Dewey es obligatorio.',
+            'newCopyCount.required' => 'Selecciona la cantidad de ejemplares.',
+            'newCopyCount.integer' => 'La cantidad de ejemplares debe ser un número entero.',
+            'newCopyCount.min' => 'Debe registrarse al menos un ejemplar.',
+            'newCopyCount.max' => 'La cantidad máxima es de 50 ejemplares.',
+            'newProgram.required' => 'El programa es obligatorio.',
+            'coverUrl.url' => 'La portada debe usar una dirección web válida con http o https.',
         ]);
+        $copyCount = (int) $data['newCopyCount'];
         $searchText = Str::lower(Str::ascii(implode(' ', [
             $data['title'],
             $data['author'],
             $data['isbn'] ?? '',
+            $data['newDeweyCode'] ?? '',
             $data['newProgram'],
         ])));
         $book = Book::query()->create([
@@ -329,26 +353,30 @@ new class extends Component
             'authors' => [$data['author']],
             'isbn' => $data['isbn'] ?: null,
             'publisher' => null,
-            'publication_year' => null,
-            'dewey_code' => null,
+            'publication_year' => filled($data['newPublicationYear'] ?? null) ? (int) $data['newPublicationYear'] : null,
+            'dewey_code' => filled($data['newDeweyCode'] ?? null) ? $data['newDeweyCode'] : null,
             'learning_unit' => null,
             'program' => $data['newProgram'],
             'cover_url' => filled($data['coverUrl'] ?? null) ? $data['coverUrl'] : null,
             'search_text' => $searchText,
-            'total_copies' => 1,
-            'available_copies' => 1,
+            'total_copies' => $copyCount,
+            'available_copies' => $copyCount,
             'source' => ['type' => 'manual', 'created_by' => (string) auth()->id()],
             'active' => true,
         ]);
-        Copy::query()->create([
-            'book_id' => (string) $book->getKey(),
-            'barcode' => 'BA-MAN-'.Str::upper(Str::random(8)),
-            'location' => 'Por asignar',
-            'condition' => 'Bueno',
-            'status' => 'available',
-            'active' => true,
-        ]);
-        $this->reset('title', 'author', 'isbn', 'coverUrl');
+        $barcodePrefix = 'BA-MAN-'.Str::upper(Str::random(8));
+
+        for ($copyNumber = 1; $copyNumber <= $copyCount; $copyNumber++) {
+            Copy::query()->create([
+                'book_id' => (string) $book->getKey(),
+                'barcode' => $barcodePrefix.'-'.str_pad((string) $copyNumber, 3, '0', STR_PAD_LEFT),
+                'location' => 'Por asignar',
+                'condition' => 'Bueno',
+                'status' => 'available',
+                'active' => true,
+            ]);
+        }
+        $this->reset('title', 'author', 'isbn', 'newPublicationYear', 'newDeweyCode', 'newCopyCount', 'coverUrl');
         unset($this->books, $this->programs);
         session()->flash('message', 'Título agregado al catálogo.');
     }
@@ -471,10 +499,21 @@ new class extends Component
         <details class="card mt-5 p-5">
             <summary class="min-h-11 cursor-pointer py-2 font-bold text-brand-700">Agregar un título manualmente</summary>
             <form wire:submit="createBook" class="mt-5 grid gap-4 md:grid-cols-2">
-                <div><label class="label" for="title">Título</label><input id="title" class="field" wire:model="title">@error('title')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
-                <div><label class="label" for="author">Autor</label><input id="author" class="field" wire:model="author">@error('author')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
-                <div><label class="label" for="isbn">ISBN</label><input id="isbn" class="field" wire:model="isbn"></div>
-                <div><label class="label" for="newProgram">Programa</label><input id="newProgram" class="field" wire:model="newProgram"></div>
+                <div><label class="label" for="title">Título</label><input id="title" class="field" wire:model="title" required>@error('title')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
+                <div><label class="label" for="author">Autor</label><input id="author" class="field" wire:model="author" required>@error('author')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
+                <div><label class="label" for="isbn">ISBN</label><input id="isbn" class="field" wire:model="isbn" required>@error('isbn')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
+                <div><label class="label" for="newPublicationYear">Año de edición</label><input id="newPublicationYear" class="field" type="number" min="1400" max="{{ now()->year + 1 }}" wire:model="newPublicationYear" required>@error('newPublicationYear')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
+                <div><label class="label" for="newDeweyCode">Dewey</label><input id="newDeweyCode" class="field" wire:model="newDeweyCode" placeholder="Ej. 005.12" required>@error('newDeweyCode')<p class="text-sm text-red-700">{{ $message }}</p>@enderror</div>
+                <div><label class="label" for="newProgram">Programa</label><input id="newProgram" class="field" wire:model="newProgram" required></div>
+                <div>
+                    <label class="label" for="newCopyCount">Cantidad de ejemplares</label>
+                    <select id="newCopyCount" class="field" wire:model="newCopyCount" required>
+                        @foreach (range(1, 50) as $copyCount)
+                            <option value="{{ $copyCount }}">{{ $copyCount }}</option>
+                        @endforeach
+                    </select>
+                    @error('newCopyCount')<p class="text-sm text-red-700">{{ $message }}</p>@enderror
+                </div>
                 <div class="md:col-span-2">
                     <label class="label" for="coverUrl">URL de portada <span class="font-normal text-slate-500">(opcional)</span></label>
                     <input id="coverUrl" class="field" type="url" wire:model="coverUrl" placeholder="https://ejemplo.com/portada.jpg" aria-describedby="coverUrl-help coverUrl-error">

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\Copy;
 use App\Models\Reservation;
 use App\Models\User;
 use App\ReservationStatus;
@@ -11,6 +12,50 @@ use Tests\TestCase;
 
 class CatalogTest extends TestCase
 {
+    public function test_title_creation_requires_all_fields(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->set('title', 'Título incompleto')
+            ->set('author', 'Autor de prueba')
+            ->set('isbn', '')
+            ->set('newPublicationYear', '')
+            ->set('newDeweyCode', '')
+            ->set('newProgram', '')
+            ->call('createBook')
+            ->assertHasErrors(['isbn', 'newPublicationYear', 'newDeweyCode', 'newProgram']);
+
+        $this->assertNull(Book::query()->where('title', 'Título incompleto')->first());
+    }
+
+    public function test_librarian_can_create_a_title_with_metadata_and_multiple_copies(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->set('title', 'Diseño de sistemas')
+            ->set('author', 'Elena Torres')
+            ->set('isbn', '9781234567897')
+            ->set('newPublicationYear', '2024')
+            ->set('newDeweyCode', '005.12')
+            ->set('newProgram', 'Ingeniería')
+            ->set('newCopyCount', '3')
+            ->call('createBook')
+            ->assertHasNoErrors()
+            ->assertSee('Título agregado al catálogo.');
+
+        $book = Book::query()->where('title', 'Diseño de sistemas')->firstOrFail();
+
+        $this->assertSame(2024, $book->publication_year);
+        $this->assertSame('005.12', $book->dewey_code);
+        $this->assertSame(3, $book->total_copies);
+        $this->assertSame(3, $book->available_copies);
+        $this->assertSame(3, Copy::query()->where('book_id', (string) $book->getKey())->count());
+    }
+
     public function test_librarian_can_edit_book_metadata(): void
     {
         $librarian = User::factory()->librarian()->create();

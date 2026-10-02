@@ -8,6 +8,7 @@ use App\CopyStatus;
 use App\LoanStatus;
 use App\Models\Book;
 use App\Models\Copy;
+use App\Models\Loan;
 use App\Models\Reservation;
 use App\Models\User;
 use App\ReservationStatus;
@@ -31,6 +32,7 @@ class CirculationTest extends TestCase
 
         Livewire::actingAs($librarian)
             ->test('pages::circulation')
+            ->assertSee('También puedo ingresar o escanear el código')
             ->set('bookSearch', 'algebra')
             ->assertSee('Álgebra lineal aplicada')
             ->call('selectBook', (string) $book->getKey())
