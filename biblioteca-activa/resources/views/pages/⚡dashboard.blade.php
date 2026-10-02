@@ -19,7 +19,7 @@ new class extends Component
 
         if ($user->canManageLibrary()) {
             return [
-                ['label' => 'Títulos activos', 'value' => Book::query()->where('active', true)->count(), 'tone' => 'indigo'],
+                ['label' => 'Títulos activos', 'value' => Book::query()->where('active', true)->count(), 'tone' => 'brand'],
                 ['label' => 'Ejemplares', 'value' => Copy::query()->where('active', true)->count(), 'tone' => 'emerald'],
                 ['label' => 'Préstamos activos', 'value' => Loan::query()->whereIn('status', [LoanStatus::Active->value, LoanStatus::Overdue->value])->count(), 'tone' => 'amber'],
                 ['label' => 'Usuarios activos', 'value' => User::query()->where('status', 'active')->count(), 'tone' => 'sky'],
@@ -27,7 +27,7 @@ new class extends Component
         }
 
         return [
-            ['label' => 'Préstamos activos', 'value' => Loan::query()->where('user_id', (string) $user->getKey())->whereIn('status', [LoanStatus::Active->value, LoanStatus::Overdue->value])->count(), 'tone' => 'indigo'],
+            ['label' => 'Préstamos activos', 'value' => Loan::query()->where('user_id', (string) $user->getKey())->whereIn('status', [LoanStatus::Active->value, LoanStatus::Overdue->value])->count(), 'tone' => 'brand'],
             ['label' => 'Reservaciones', 'value' => Reservation::query()->where('user_id', (string) $user->getKey())->where('status', ReservationStatus::Pending->value)->count(), 'tone' => 'amber'],
             ['label' => 'Títulos disponibles', 'value' => Book::query()->where('available_copies', '>', 0)->count(), 'tone' => 'emerald'],
         ];
@@ -64,7 +64,7 @@ new class extends Component
         @forelse($this->recentLoans as $loan)
             <div class="grid gap-2 border-b border-slate-100 px-5 py-4 last:border-0 sm:grid-cols-[1fr_auto] sm:px-6" wire:key="loan-{{ $loan->getKey() }}">
                 <div><p class="font-semibold text-slate-900">{{ $loan->book_title }}</p><p class="mt-1 text-sm text-slate-500">{{ $loan->copy_barcode }} · {{ $loan->user_name }}</p></div>
-                <div class="sm:text-right"><span class="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-brand-700">{{ $loan->status->label() }}</span><p class="mt-1 text-xs text-slate-500">Vence {{ $loan->due_at?->format('d/m/Y') }}</p></div>
+                <div class="sm:text-right"><span class="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">{{ $loan->status->label() }}</span><p class="mt-1 text-xs text-slate-500">Vence {{ $loan->due_at?->format('d/m/Y') }}</p></div>
             </div>
         @empty
             <div class="px-6 py-12 text-center"><p class="font-semibold text-slate-700">Todavía no hay movimientos.</p><p class="mt-1 text-sm text-slate-500">La actividad aparecerá aquí cuando se registre.</p></div>

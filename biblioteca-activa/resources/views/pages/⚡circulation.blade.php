@@ -278,7 +278,7 @@ new class extends Component
                 @error('bookSearch') <p class="mt-1 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
 
                 @if ($this->bookResults->isNotEmpty())
-                    <div id="book-results" class="absolute z-20 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg" role="listbox">
+                    <div id="book-results" class="absolute z-20 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-slate-200 bg-card p-2 shadow-lg" role="listbox">
                         @foreach ($this->bookResults as $book)
                             <button
                                 type="button"
@@ -415,7 +415,7 @@ new class extends Component
                             <td class="px-6 py-4 font-semibold">{{ $loan->book_title }}</td>
                             <td class="px-6 py-4">{{ $loan->user_name }}</td>
                             <td class="px-6 py-4">{{ $loan->due_at->format('d/m/Y') }}</td>
-                            <td class="px-6 py-4"><span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-brand-700">{{ $loan->status->value === 'overdue' ? 'Vencido' : 'Activo' }}</span></td>
+                            <td class="px-6 py-4"><span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">{{ $loan->status->value === 'overdue' ? 'Vencido' : 'Activo' }}</span></td>
                             <td class="px-6 py-4 text-right">
                                 @if (auth()->user()->canManageLibrary())
                                     <button

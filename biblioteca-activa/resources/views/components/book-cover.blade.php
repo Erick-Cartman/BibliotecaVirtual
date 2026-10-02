@@ -7,7 +7,7 @@
 @php($coverHue = 200 + (abs(crc32((string) ($book->source_key ?: $book->title))) % 140))
 
 <div
-    {{ $attributes->class(['relative isolate overflow-hidden bg-gradient-to-br from-brand-100 via-white to-amber-100']) }}
+    {{ $attributes->class(['relative isolate overflow-hidden bg-gradient-to-br from-brand-100 via-card to-brand-50']) }}
 >
     @if ($coverUrl)
         <img

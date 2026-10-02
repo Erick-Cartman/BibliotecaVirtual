@@ -373,7 +373,7 @@ new class extends Component
     @if ($reservationConfirmation)
         <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.closeReservationConfirmation()">
             <button type="button" class="absolute inset-0 cursor-default bg-slate-950/70 backdrop-blur-sm" wire:click="closeReservationConfirmation" aria-label="Cerrar confirmación de reservación"></button>
-            <section class="relative max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="reservation-qr-title">
+            <section class="relative max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl bg-card shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="reservation-qr-title">
                 <header class="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5 sm:px-8">
                     <div>
                         <p class="eyebrow">Reserva confirmada</p>
@@ -385,7 +385,7 @@ new class extends Component
                     </button>
                 </header>
                 <div class="grid gap-6 p-6 sm:p-8 md:grid-cols-[minmax(16rem,18rem)_1fr] md:items-start">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm" wire:ignore>
+                    <div class="rounded-2xl border border-slate-200 bg-card p-4 text-center shadow-sm" wire:ignore>
                         @php
                             $reservationQrPayload = implode("\n", [
                                 'Biblioteca Activa',
@@ -398,7 +398,7 @@ new class extends Component
                                 'Fecha: '.$reservationConfirmation['reserved_at'],
                             ]);
                         @endphp
-                        <canvas x-ref="reservationQr" class="mx-auto size-64 max-w-full" x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($reservationQrPayload), { width: 256, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#172033', light: '#ffffff' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });" aria-label="Código QR con los datos de la reservación"></canvas>
+                        <canvas x-ref="reservationQr" class="mx-auto size-64 max-w-full" x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($reservationQrPayload), { width: 256, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#29211D', light: '#FFF8EF' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });" aria-label="Código QR con los datos de la reservación"></canvas>
                         <p class="mt-3 text-xs font-semibold text-slate-500">Escanéalo para consultar esta reserva.</p>
                     </div>
                     <dl class="divide-y divide-slate-100 rounded-2xl border border-slate-200">
@@ -490,14 +490,14 @@ new class extends Component
         <div class="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.closeBookDetails()">
             <button type="button" class="absolute inset-0 cursor-default bg-slate-950/70 backdrop-blur-sm" wire:click="closeBookDetails" aria-label="Cerrar detalles del libro"></button>
             <section
-                class="relative max-h-[calc(100vh-2rem)] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
+                class="relative max-h-[calc(100vh-2rem)] w-full max-w-5xl overflow-y-auto rounded-3xl bg-card shadow-2xl"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="book-detail-title"
                 aria-describedby="book-detail-description"
                 wire:key="book-detail-{{ $selectedBook->getKey() }}"
             >
-                <button type="button" class="absolute right-4 top-4 z-10 grid min-h-11 min-w-11 cursor-pointer place-items-center rounded-xl bg-white/95 text-slate-600 shadow-sm transition hover:bg-white hover:text-slate-950" wire:click="closeBookDetails" x-ref="closeDetails" x-init="$nextTick(() => $refs.closeDetails.focus())" aria-label="Cerrar detalles">
+                <button type="button" class="absolute right-4 top-4 z-10 grid min-h-11 min-w-11 cursor-pointer place-items-center rounded-xl bg-card/95 text-slate-600 shadow-sm transition hover:bg-card hover:text-slate-950" wire:click="closeBookDetails" x-ref="closeDetails" x-init="$nextTick(() => $refs.closeDetails.focus())" aria-label="Cerrar detalles">
                     <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
                 </button>
 
@@ -580,14 +580,14 @@ new class extends Component
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" x-data x-on:keydown.escape.window="$wire.cancelEditing()">
             <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" aria-hidden="true"></div>
             <section
-                class="relative max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl"
+                class="relative max-h-[calc(100vh-2rem)] w-full max-w-4xl overflow-y-auto rounded-2xl bg-card shadow-2xl"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="edit-book-title"
                 aria-describedby="edit-book-description"
                 x-init="$nextTick(() => $refs.editTitle.focus())"
             >
-                <header class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 sm:px-7">
+                <header class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-card px-5 py-4 sm:px-7">
                     <div>
                         <p class="eyebrow">Catálogo</p>
                         <h2 id="edit-book-title" class="mt-1 font-display text-2xl font-bold text-ink">Editar libro</h2>

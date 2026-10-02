@@ -9,9 +9,9 @@
     @livewireStyles
 </head>
 <body class="min-h-screen">
-    <a href="#contenido" class="sr-only z-50 rounded bg-white p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Saltar al contenido</a>
+    <a href="#contenido" class="sr-only z-50 rounded bg-card p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Saltar al contenido</a>
     <div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
-        <aside class="border-b border-slate-200 bg-slate-950 px-5 py-5 text-white lg:min-h-screen lg:border-b-0 lg:border-r lg:border-slate-800">
+        <aside class="border-b border-slate-200 bg-sidebar px-5 py-5 text-white lg:min-h-screen lg:border-b-0 lg:border-r lg:border-slate-800">
             @php
                 $profileUser = auth()->user();
                 $profileNameParts = preg_split('/\s+/', trim((string) $profileUser->name), 2);
@@ -25,13 +25,13 @@
                 <span><span class="block font-display text-xl font-bold">Biblioteca Activa</span><span class="text-xs text-slate-400">Comunidad UDG</span></span>
             </a>
             <nav class="mt-7 flex gap-2 overflow-x-auto lg:flex-col" aria-label="Navegación principal">
-                <a href="{{ route('dashboard') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-white text-slate-950' => request()->routeIs('dashboard'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('dashboard')])>Resumen</a>
-                <a href="{{ route('catalog') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-white text-slate-950' => request()->routeIs('catalog'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('catalog')])>Catálogo</a>
+                <a href="{{ route('dashboard') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('dashboard'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('dashboard')])>Resumen</a>
+                <a href="{{ route('catalog') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('catalog'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('catalog')])>Catálogo</a>
                 @if(auth()->user()->canManageLibrary())
-                    <a href="{{ route('circulation') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-white text-slate-950' => request()->routeIs('circulation'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('circulation')])>Circulación</a>
+                    <a href="{{ route('circulation') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('circulation'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('circulation')])>Circulación</a>
                 @endif
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('users') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-white text-slate-950' => request()->routeIs('users'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('users')])>Usuarios</a>
+                    <a href="{{ route('users') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('users'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('users')])>Usuarios</a>
                 @endif
             </nav>
             <div class="mt-7 border-t border-slate-800 pt-5">
@@ -58,7 +58,7 @@
         </aside>
         <main id="contenido" class="min-w-0 px-4 py-6 sm:px-8 lg:px-10 lg:py-9">{{ $slot }}</main>
     </div>
-    <dialog id="profile-view-dialog" aria-labelledby="profile-view-title" class="w-[calc(100%-2rem)] max-w-lg rounded-3xl border-0 bg-white p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/70">
+    <dialog id="profile-view-dialog" aria-labelledby="profile-view-title" class="w-[calc(100%-2rem)] max-w-lg rounded-3xl border-0 bg-card p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/70">
         <div class="p-6 sm:p-8">
             <div class="flex items-start justify-between gap-4">
                 <div>
@@ -106,7 +106,7 @@
             <button type="button" class="btn-secondary mt-6 w-full" onclick="document.getElementById('profile-view-dialog').close()">Cerrar</button>
         </div>
     </dialog>
-    <dialog id="profile-settings-dialog" aria-labelledby="profile-settings-title" class="w-[calc(100%-2rem)] max-w-2xl rounded-3xl border-0 bg-white p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/70">
+    <dialog id="profile-settings-dialog" aria-labelledby="profile-settings-title" class="w-[calc(100%-2rem)] max-w-2xl rounded-3xl border-0 bg-card p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/70">
         <div class="max-h-[90vh] overflow-y-auto p-6 sm:p-8">
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf

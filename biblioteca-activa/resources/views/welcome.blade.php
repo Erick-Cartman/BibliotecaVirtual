@@ -7,8 +7,8 @@
     <title>Biblioteca Activa</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white">
-    <header class="border-b border-slate-200 bg-white/95">
+<body class="bg-surface">
+    <header class="border-b border-slate-200 bg-ivory/95">
         <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Navegación principal">
             <a href="{{ route('home') }}" class="flex items-center gap-3 font-display text-xl font-bold text-ink">
                 <span class="grid size-10 place-items-center rounded-xl bg-brand-600 text-white" aria-hidden="true">
@@ -20,11 +20,11 @@
     </header>
 
     <main>
-        <section class="relative overflow-hidden bg-slate-950 text-white">
-            <div class="absolute inset-0 opacity-30" style="background-image:radial-gradient(circle at 80% 20%,#6366f1 0,transparent 35%),radial-gradient(circle at 10% 90%,#4f46e5 0,transparent 30%)"></div>
+        <section class="relative overflow-hidden bg-hero text-white">
+            <div class="absolute inset-0 opacity-30" style="background-image:radial-gradient(circle at 80% 20%,#B77945 0,transparent 35%),radial-gradient(circle at 10% 90%,#9A633A 0,transparent 30%)"></div>
             <div class="relative mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1.1fr_.9fr] lg:px-8 lg:py-28">
                 <div>
-                    <p class="eyebrow text-indigo-300">Biblioteca escolar · Comunidad UDG</p>
+                    <p class="eyebrow text-brand-200">Biblioteca escolar · Comunidad UDG</p>
                     <h1 class="mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.06] tracking-tight sm:text-6xl">El conocimiento circula cuando la biblioteca está activa.</h1>
                     <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Explora el acervo, revisa disponibilidad y administra tu actividad desde un espacio claro, accesible y pensado para la vida académica.</p>
                     <div class="mt-9 flex flex-wrap gap-3">
@@ -34,19 +34,19 @@
                 </div>
                 @php($featuredBook = $featuredBooks->first())
                 <div
-                    class="card self-center overflow-hidden border-slate-700 bg-slate-900/80 p-5 backdrop-blur sm:p-6"
+                    class="card self-center overflow-hidden border-ivory bg-ivory p-5 text-ink backdrop-blur sm:p-6"
                     data-book-viewer
                     role="region"
                     aria-labelledby="featured-book-title"
                 >
                     <div class="flex items-start justify-between gap-4">
                         <div>
-                            <p class="text-sm font-semibold text-indigo-300">Visor 3D del acervo</p>
-                            <h2 id="featured-book-title" class="mt-2 font-display text-2xl font-bold text-white">LIBRO VIRTUAL</h2>
-                            <p class="mt-2 max-w-sm text-sm leading-6 text-slate-400">Una selección real de la base de datos girando sobre su propio eje.</p>
+                            <p class="text-sm font-semibold text-brand-700">Visor 3D del acervo</p>
+                            <h2 id="featured-book-title" class="mt-2 font-display text-2xl font-bold text-ink">LIBRO VIRTUAL</h2>
+                            <p class="mt-2 max-w-sm text-sm leading-6 text-secondary">Una selección real de la base de datos girando sobre su propio eje.</p>
                         </div>
                         @if ($featuredBook)
-                            <span class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-100">1 selección</span>
+                            <span class="shrink-0 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">1 selección</span>
                         @endif
                     </div>
 
@@ -79,17 +79,17 @@
 
                         <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div class="min-w-0">
-                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-indigo-300">Selección de hoy</p>
+                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Selección de hoy</p>
                                 <a
                                     href="{{ auth()->check() ? route('catalog') : route('login') }}"
-                                    class="mt-1 block truncate font-display text-xl font-bold text-white underline-offset-4 transition hover:text-indigo-200 hover:underline focus-visible:ring-2 focus-visible:ring-indigo-300"
+                                    class="mt-1 block truncate font-display text-xl font-bold text-ink underline-offset-4 transition hover:text-brand-700 hover:underline focus-visible:ring-2 focus-visible:ring-brand-200"
                                     aria-label="Consultar {{ $featuredBook->title }} en el catálogo"
                                 >{{ $featuredBook->title }}</a>
-                                <p class="mt-1 truncate text-sm text-slate-400">{{ $featuredBook->authorLine() ?: 'Autor no registrado' }}</p>
+                                <p class="mt-1 truncate text-sm text-secondary">{{ $featuredBook->authorLine() ?: 'Autor no registrado' }}</p>
                             </div>
                             <button
                                 type="button"
-                                class="btn-secondary min-h-11 shrink-0 border-slate-600 bg-slate-800 text-white hover:border-indigo-300 hover:bg-slate-700 hover:text-white"
+                                class="btn-secondary min-h-11 shrink-0 border-slate-600 bg-slate-800 text-white hover:border-brand-200 hover:bg-slate-700 hover:text-white"
                                 data-book-toggle
                                 aria-pressed="false"
                                 aria-label="Pausar la rotación 3D"
@@ -97,9 +97,9 @@
                                 Pausar giro
                             </button>
                         </div>
-                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-slate-400">El libro rota automáticamente. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
+                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro rota automáticamente. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
                     @else
-                        <div class="mt-6 rounded-2xl border border-dashed border-slate-700 px-5 py-8 text-sm leading-6 text-slate-400">
+                        <div class="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-8 text-sm leading-6 text-secondary">
                             El visor 3D aparecerá cuando el acervo esté disponible.
                         </div>
                     @endif
@@ -116,6 +116,6 @@
             </div>
         </section>
     </main>
-    <footer class="border-t border-slate-200 bg-slate-50"><div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:justify-between lg:px-8"><p>Biblioteca Activa · Proyecto académico UDG</p><p>Diseñada para acceso claro y responsable.</p></div></footer>
+    <footer class="border-t border-slate-200 bg-surface"><div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:justify-between lg:px-8"><p>Biblioteca Activa · Proyecto académico UDG</p><p>Diseñada para acceso claro y responsable.</p></div></footer>
 </body>
 </html>

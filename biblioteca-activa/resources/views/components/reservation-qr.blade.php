@@ -26,10 +26,10 @@
 
 <div
     id="reservation-qr-{{ $reservation->getKey() }}"
-    class="shrink-0 rounded-xl border border-slate-200 bg-white p-2 text-center shadow-sm"
+    class="shrink-0 rounded-xl border border-slate-200 bg-card p-2 text-center shadow-sm"
     wire:ignore
     x-data
-    x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($payloadText), { width: 96, margin: 1, errorCorrectionLevel: 'M', color: { dark: '#172033', light: '#ffffff' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });"
+    x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($payloadText), { width: 96, margin: 1, errorCorrectionLevel: 'M', color: { dark: '#29211D', light: '#FFF8EF' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });"
 >
     <canvas
         x-ref="reservationQr"
