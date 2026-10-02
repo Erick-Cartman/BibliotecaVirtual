@@ -18,11 +18,8 @@
                 $profileFirstName = old('first_name', $profileUser->first_name ?: ($profileNameParts[0] ?? ''));
                 $profileLastName = old('last_name', $profileUser->last_name ?: ($profileNameParts[1] ?? ''));
             @endphp
-            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-3" aria-label="Biblioteca Activa, inicio">
-                <span class="grid size-11 place-items-center rounded-xl bg-brand-600" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" class="size-6 fill-none stroke-current" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>
-                </span>
-                <span><span class="block font-display text-xl font-bold">Biblioteca Activa</span><span class="text-xs text-slate-400">Comunidad UDG</span></span>
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center" aria-label="Biblioteca Activa, inicio">
+                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-20 w-auto object-contain">
             </a>
             <nav class="mt-7 flex gap-2 overflow-x-auto lg:flex-col" aria-label="Navegación principal">
                 <a href="{{ route('dashboard') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('dashboard'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('dashboard')])>Resumen</a>

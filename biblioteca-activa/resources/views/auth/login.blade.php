@@ -9,8 +9,14 @@
 <body class="min-h-screen bg-sidebar">
     <main class="grid min-h-screen lg:grid-cols-2">
         <section class="hidden bg-hero p-12 text-white lg:flex lg:flex-col lg:justify-between">
-            <a href="{{ route('home') }}" class="font-display text-2xl font-bold">Biblioteca Activa</a>
-            <div class="max-w-xl"><p class="text-sm font-bold uppercase tracking-[.2em] text-brand-200">Comunidad académica</p><h1 class="mt-5 font-display text-5xl font-bold leading-tight">Tu biblioteca, siempre en movimiento.</h1><p class="mt-5 text-lg leading-8 text-brand-100">Consulta el acervo y gestiona la actividad bibliotecaria desde un solo lugar.</p></div>
+            <div class="max-w-xl">
+                <a href="{{ route('home') }}" class="mx-auto mb-8 flex w-fit" aria-label="Biblioteca Activa, inicio">
+                    <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-36 w-auto object-contain brightness-0 invert">
+                </a>
+                <p class="text-sm font-bold uppercase tracking-[.2em] text-brand-200">Comunidad académica</p><h1 class="mt-5 font-display text-5xl font-bold leading-tight">Tu biblioteca, siempre en movimiento.</h1><p class="mt-5 text-lg leading-8 text-brand-100">Consulta el acervo y gestiona la actividad bibliotecaria desde un solo lugar.</p>
+                <img src="{{ asset('school-reader.png') }}" alt="Persona leyendo un libro en el patio de una escuela" class="mt-8 h-56 w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/15" loading="eager" decoding="async">
+                <p class="mt-5 text-base font-medium leading-7 text-brand-100">Leer amplía tus ideas, fortalece tu imaginación y te ayuda a comprender mejor el mundo.</p>
+            </div>
             <p class="text-sm text-brand-200">Acceso institucional · UDG</p>
         </section>
         <section class="flex items-center justify-center px-5 py-12">

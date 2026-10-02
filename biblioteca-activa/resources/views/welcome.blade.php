@@ -9,12 +9,11 @@
 </head>
 <body class="bg-surface">
     <header class="border-b border-slate-200 bg-ivory/95">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Navegación principal">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 font-display text-xl font-bold text-ink">
-                <span class="grid size-10 place-items-center rounded-xl bg-brand-600 text-white" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>
-                </span>Biblioteca Activa
+        <nav class="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Navegación principal">
+            <a href="{{ route('home') }}" class="flex items-center" aria-label="Biblioteca Activa, inicio">
+                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-20 w-auto object-contain">
             </a>
+            <span class="absolute left-1/2 hidden -translate-x-1/2 font-display text-2xl font-bold tracking-tight text-brand-700 sm:block sm:text-3xl">Biblioteca Activa</span>
             <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="btn-primary">{{ auth()->check() ? 'Ir al panel' : 'Iniciar sesión' }}</a>
         </nav>
     </header>
@@ -108,7 +107,7 @@
         </section>
 
         <section id="servicios" class="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-            <div class="max-w-2xl"><p class="eyebrow">Un sistema, tres experiencias</p><h2 class="mt-3 font-display text-4xl font-bold text-ink">Cada rol ve lo que necesita</h2><p class="mt-4 text-lg text-slate-600">Una experiencia modular para estudiantes, personal bibliotecario y administración.</p></div>
+            <div class="max-w-2xl"><p class="eyebrow">Un sistema, tres experiencias</p><h2 class="mt-3 font-display text-4xl font-bold text-ink">Explora, aprende, conectate.</h2><p class="mt-4 text-lg text-slate-600">Una experiencia modular para estudiantes, personal bibliotecario y administración.</p></div>
             <div class="mt-10 grid gap-5 md:grid-cols-3">
                 <article class="card p-6"><p class="eyebrow">Estudiante</p><h3 class="mt-3 font-display text-2xl font-bold">Descubre y consulta</h3><p class="mt-3 leading-7 text-slate-600">Busca material, conoce disponibilidad y da seguimiento a préstamos y reservaciones.</p></article>
                 <article class="card p-6"><p class="eyebrow">Bibliotecario</p><h3 class="mt-3 font-display text-2xl font-bold">Mantén el flujo</h3><p class="mt-3 leading-7 text-slate-600">Registra préstamos y devoluciones con trazabilidad y mensajes directos.</p></article>
