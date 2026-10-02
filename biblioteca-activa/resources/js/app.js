@@ -1,3 +1,4 @@
+import { gsap } from 'gsap';
 import QRCode from 'qrcode';
 
 window.QRCode = QRCode;
@@ -13,14 +14,45 @@ document.querySelectorAll('[data-book-viewer]').forEach((viewer) => {
         return;
     }
 
-    let manuallyPaused = reducedMotionQuery.matches;
+    const rotation = gsap.to(book, {
+        rotationY: 360,
+        rotationX: -4,
+        duration: 20,
+        ease: 'none',
+        repeat: -1,
+        paused: true,
+        transformOrigin: '50% 50%',
+        transformPerspective: 1200,
+    });
+
+    let manuallyPaused = false;
     let pausedByFocus = false;
+    let pausedByVisibility = document.hidden;
+    let pausedByViewport = false;
+
+    gsap.set(book, {
+        rotationY: 0,
+        rotationX: -4,
+        transformOrigin: '50% 50%',
+        transformPerspective: 1200,
+    });
+
+    const isPaused = () => reducedMotionQuery.matches
+        || manuallyPaused
+        || pausedByFocus
+        || pausedByVisibility
+        || pausedByViewport;
 
     const updateBookState = () => {
         const reducedMotion = reducedMotionQuery.matches;
-        const paused = reducedMotion || manuallyPaused || pausedByFocus;
+        const paused = isPaused();
 
-        book.classList.toggle('is-paused', paused);
+        if (paused) {
+            rotation.pause();
+        } else {
+            rotation.resume();
+        }
+
         toggle.disabled = reducedMotion;
         toggle.setAttribute('aria-pressed', String(manuallyPaused));
         toggle.setAttribute(
@@ -55,6 +87,21 @@ document.querySelectorAll('[data-book-viewer]').forEach((viewer) => {
     });
 
     const handleMotionPreferenceChange = () => updateBookState();
+
+    const handleVisibilityChange = () => {
+        pausedByVisibility = document.hidden;
+        updateBookState();
+    };
+
+    const viewportObserver = typeof IntersectionObserver === 'function'
+        ? new IntersectionObserver(([entry]) => {
+            pausedByViewport = !entry.isIntersecting;
+            updateBookState();
+        }, { threshold: 0.1 })
+        : null;
+
+    viewportObserver?.observe(viewer);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     if (typeof reducedMotionQuery.addEventListener === 'function') {
         reducedMotionQuery.addEventListener('change', handleMotionPreferenceChange);

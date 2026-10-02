@@ -43,7 +43,7 @@
                         <div>
                             <p class="text-sm font-semibold text-brand-700">Visor 3D del acervo</p>
                             <h2 id="featured-book-title" class="mt-2 font-display text-2xl font-bold text-ink">LIBRO VIRTUAL</h2>
-                            <p class="mt-2 max-w-sm text-sm leading-6 text-secondary">Una selección real de la base de datos girando sobre su propio eje.</p>
+                            <p class="mt-2 max-w-sm text-sm leading-6 text-secondary">Una selección real de la base de datos girando suavemente en 360 grados.</p>
                         </div>
                         @if ($featuredBook)
                             <span class="shrink-0 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">1 selección</span>
@@ -71,7 +71,7 @@
                                 <div class="book-3d__face book-3d__pages book-3d__pages--bottom" aria-hidden="true"></div>
                                 <div class="book-3d__face book-3d__pages book-3d__pages--edge" aria-hidden="true"></div>
                                 <div class="book-3d__face book-3d__front">
-                                    <x-book-cover :book="$featuredBook" loading="eager" class="size-full rounded-[1.15rem] shadow-2xl ring-1 ring-white/15" />
+                                    <x-book-cover :book="$featuredBook" loading="eager" class="size-full rounded-none shadow-2xl ring-1 ring-white/15" />
                                     <span class="absolute inset-x-3 bottom-3 rounded-lg bg-slate-950/80 px-2 py-1.5 text-center text-[0.625rem] font-bold uppercase tracking-[0.16em] text-emerald-300 backdrop-blur-sm">Disponible</span>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                                 Pausar giro
                             </button>
                         </div>
-                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro rota automáticamente. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
+                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro gira suavemente en 360 grados. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
                     @else
                         <div class="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-8 text-sm leading-6 text-secondary">
                             El visor 3D aparecerá cuando el acervo esté disponible.
