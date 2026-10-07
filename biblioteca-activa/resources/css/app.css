@@ -181,6 +181,12 @@
         aspect-ratio: 2 / 3;
         transform-style: preserve-3d;
         will-change: transform;
+        animation: book-spin 20s linear infinite;
+        animation-play-state: paused;
+    }
+
+    .book-3d.is-rotating {
+        animation-play-state: running;
     }
 
     .book-3d__face {
@@ -298,6 +304,11 @@
         height: 100%;
         transform: rotateY(90deg);
         transform-origin: center;
+    }
+
+    @keyframes book-spin {
+        from { transform: rotateX(-4deg) rotateY(0deg); }
+        to { transform: rotateX(-4deg) rotateY(360deg); }
     }
 }
 

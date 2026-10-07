@@ -11,7 +11,7 @@
     <header class="border-b border-slate-200 bg-ivory/95">
         <nav class="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Navegación principal">
             <a href="{{ route('home') }}" class="flex items-center" aria-label="Biblioteca Activa, inicio">
-                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-20 w-auto object-contain">
+                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="-ml-3 h-20 w-auto shrink-0 object-contain">
             </a>
             <span class="absolute left-1/2 hidden -translate-x-1/2 font-display text-2xl font-bold tracking-tight text-brand-700 sm:block sm:text-3xl">Biblioteca Activa</span>
             <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="btn-primary">{{ auth()->check() ? 'Ir al panel' : 'Iniciar sesión' }}</a>
@@ -86,17 +86,8 @@
                                 >{{ $featuredBook->title }}</a>
                                 <p class="mt-1 truncate text-sm text-secondary">{{ $featuredBook->authorLine() ?: 'Autor no registrado' }}</p>
                             </div>
-                            <button
-                                type="button"
-                                class="btn-secondary min-h-11 shrink-0 border-slate-600 bg-slate-800 text-white hover:border-brand-200 hover:bg-slate-700 hover:text-white"
-                                data-book-toggle
-                                aria-pressed="false"
-                                aria-label="Pausar la rotación 3D"
-                            >
-                                Pausar giro
-                            </button>
                         </div>
-                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro gira suavemente en 360 grados. Puedes detenerlo para revisar la portada; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
+                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro gira suavemente en 360 grados; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
                     @else
                         <div class="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-8 text-sm leading-6 text-secondary">
                             El visor 3D aparecerá cuando el acervo esté disponible.

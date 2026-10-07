@@ -20,6 +20,7 @@ class HomeTest extends TestCase
         $response->assertOk()
             ->assertSee('data-book-viewer', false)
             ->assertSee('book-3d', false)
+            ->assertDontSee('Pausar giro')
             ->assertSee($book->title);
     }
 

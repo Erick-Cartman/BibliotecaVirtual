@@ -149,6 +149,7 @@ new class extends Component
         $this->barcode = $copy->barcode;
         $this->studentCode = (string) $student->student_code;
         $this->resetErrorBag();
+        $this->dispatch('loan-form-ready');
     }
 
     public function cancelReservation(string $reservationId): void
@@ -241,13 +242,21 @@ new class extends Component
 };
 ?>
 
-<div>
+<div
+    x-data
+    x-on:loan-form-ready.window="$nextTick(() => { document.getElementById('new-loan')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('bookSearch')?.focus({ preventScroll: true }); })"
+>
     <x-slot:title>Circulación · Biblioteca Activa</x-slot:title>
 
-    <div>
-        <p class="eyebrow">Operación bibliotecaria</p>
-        <h1 class="mt-2 font-display text-4xl font-bold text-ink">Circulación</h1>
-        <p class="mt-2 text-slate-600">Busca el libro por nombre, selecciona un ejemplar y registra la entrega.</p>
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="eyebrow">Operación bibliotecaria</p>
+            <h1 class="mt-2 font-display text-4xl font-bold text-ink">Circulación</h1>
+            <p class="mt-2 text-slate-600">Busca el libro por nombre, selecciona un ejemplar y registra la entrega.</p>
+        </div>
+        @if (auth()->user()->canManageLibrary())
+            <x-qr-scanner />
+        @endif
     </div>
 
     @if (session('message'))
@@ -257,7 +266,7 @@ new class extends Component
     @endif
 
     <section class="mt-7 grid gap-5 xl:grid-cols-2">
-        <form wire:submit="createLoan" class="card p-6">
+        <form id="new-loan" wire:submit="createLoan" class="card scroll-mt-6 p-6">
             <p class="eyebrow">Salida</p>
             <h2 class="mt-2 font-display text-2xl font-bold">Nuevo préstamo</h2>
 

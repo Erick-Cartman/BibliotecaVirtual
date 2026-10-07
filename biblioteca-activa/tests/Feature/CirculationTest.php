@@ -17,6 +17,16 @@ use Tests\TestCase;
 
 class CirculationTest extends TestCase
 {
+    public function test_librarian_and_admin_can_open_the_qr_scanner(): void
+    {
+        foreach ([User::factory()->librarian()->create(), User::factory()->admin()->create()] as $operator) {
+            Livewire::actingAs($operator)
+                ->test('pages::circulation')
+                ->assertSee('Escanea este QR')
+                ->assertSee('qr-scanner-modal', false);
+        }
+    }
+
     public function test_librarian_can_find_a_book_by_name_and_select_an_available_copy(): void
     {
         $book = Book::factory()->create([
@@ -70,6 +80,7 @@ class CirculationTest extends TestCase
             ->call('prepareReservation', (string) $reservation->getKey())
             ->assertSet('barcode', $copy->barcode)
             ->assertSet('studentCode', 'EST-RESERVA')
+            ->assertDispatched('loan-form-ready')
             ->call('createLoan')
             ->assertHasNoErrors();
 

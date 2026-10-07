@@ -163,7 +163,33 @@ class CatalogTest extends TestCase
             ->assertSee('Editorial Académica')
             ->assertSee('Ingeniería de software')
             ->assertSee('9781234567897')
+            ->assertSee('book-qr-'.(string) $book->getKey(), false)
+            ->assertSee('Código QR con los datos del libro', false)
             ->assertDontSee('Editar datos');
+    }
+
+    public function test_librarian_can_open_a_book_without_the_student_qr(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+        $book = Book::factory()->create();
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertDontSee('book-qr-'.(string) $book->getKey(), false)
+            ->assertDontSee('Código QR con los datos del libro', false);
+    }
+
+    public function test_admin_can_open_a_book_without_the_student_qr(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $book = Book::factory()->create();
+
+        Livewire::actingAs($admin)
+            ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertDontSee('book-qr-'.(string) $book->getKey(), false)
+            ->assertDontSee('Código QR con los datos del libro', false);
     }
 
     public function test_catalog_uses_the_isbn_to_show_a_book_cover(): void

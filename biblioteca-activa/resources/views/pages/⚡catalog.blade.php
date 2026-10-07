@@ -543,6 +543,11 @@ new class extends Component
                 <div class="grid md:grid-cols-[minmax(15rem,20rem)_1fr]">
                     <div class="bg-slate-100 p-6 sm:p-8">
                         <x-book-cover :book="$selectedBook" loading="eager" class="mx-auto aspect-[3/4] w-full max-w-64 rounded-2xl shadow-xl ring-1 ring-slate-900/10" />
+                        @if (auth()->user()->role->value === 'student')
+                            <div class="mx-auto mt-6 w-full max-w-64">
+                                <x-book-qr :book="$selectedBook" />
+                            </div>
+                        @endif
                     </div>
 
                     <div class="flex flex-col p-6 sm:p-8 md:p-10">
