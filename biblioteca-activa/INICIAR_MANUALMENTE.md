@@ -53,7 +53,18 @@ Consulta la IP del equipo con `ipconfig` y abre desde el otro equipo:
 http://IP_DEL_EQUIPO:8000
 ```
 
-En este equipo, la dirección actual es `http://172.15.1.213:8000`. MongoDB permanece escuchando únicamente en `127.0.0.1:27017`; Laravel se conecta a él localmente.
+MongoDB permanece escuchando únicamente en `127.0.0.1:27017`; Laravel se conecta a él localmente.
+
+## Cámara desde otro dispositivo con HTTPS
+
+Para que el navegador permita usar la cámara desde otro equipo, inicia la variante HTTPS:
+
+```powershell
+cd C:\modular\BibliotecaActiva\biblioteca-activa
+powershell -ExecutionPolicy Bypass -File .\scripts\start-network-https.ps1
+```
+
+Abre la dirección HTTPS que muestre el script, normalmente `https://IP_DEL_EQUIPO:8443`. El certificado local se guarda en `C:\modular\BibliotecaActiva\.tools\https`; si el dispositivo muestra una advertencia, instala el archivo `.cer` como certificado de confianza.
 
 ## Verificar los servicios
 
