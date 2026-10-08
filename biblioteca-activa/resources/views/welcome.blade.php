@@ -42,7 +42,7 @@
                         <div>
                             <p class="text-sm font-semibold text-brand-700">Visor 3D del acervo</p>
                             <h2 id="featured-book-title" class="mt-2 font-display text-2xl font-bold text-ink">LIBRO VIRTUAL</h2>
-                            <p class="mt-2 max-w-sm text-sm leading-6 text-secondary">Una selección real de la base de datos girando suavemente en 360 grados.</p>
+                            <p class="mt-2 max-w-sm text-sm leading-6 text-secondary">Una selección real de la base de datos de la biblioteca.</p>
                         </div>
                         @if ($featuredBook)
                             <span class="shrink-0 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">1 selección</span>
@@ -50,7 +50,7 @@
                     </div>
 
                     @if ($featuredBook)
-                        <div class="book-stage mt-6" data-book-stage aria-describedby="featured-book-description">
+                        <div class="book-stage mt-6" data-book-stage>
                             <div class="book-stage__grid" aria-hidden="true"></div>
                             <div class="book-stage__glow" aria-hidden="true"></div>
                             <div class="book-stage__shadow" aria-hidden="true"></div>
@@ -87,7 +87,6 @@
                                 <p class="mt-1 truncate text-sm text-secondary">{{ $featuredBook->authorLine() ?: 'Autor no registrado' }}</p>
                             </div>
                         </div>
-                        <p id="featured-book-description" class="mt-4 text-xs leading-5 text-secondary">El libro gira suavemente en 360 grados; la rotación también se desactiva si tu dispositivo solicita menos movimiento.</p>
                     @else
                         <div class="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-8 text-sm leading-6 text-secondary">
                             El visor 3D aparecerá cuando el acervo esté disponible.
