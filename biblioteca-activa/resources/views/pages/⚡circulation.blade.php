@@ -82,6 +82,39 @@ new class extends Component
         unset($this->bookResults);
     }
 
+    public function selectBookFromQr(string $isbn, string $title): void
+    {
+        $isbn = trim($isbn);
+        $title = trim($title);
+        $this->reset('selectedBookTitle', 'barcode', 'reservationId');
+        $this->resetErrorBag('bookSearch');
+        unset($this->bookResults);
+        $this->bookSearch = $title;
+
+        $book = null;
+        if ($isbn !== '' && mb_strtolower($isbn) !== 'no registrado') {
+            $book = Book::query()
+                ->where('active', true)
+                ->where('isbn', $isbn)
+                ->first();
+        }
+
+        $book ??= Book::query()
+            ->where('active', true)
+            ->where('title', $title)
+            ->first();
+
+        if (! $book) {
+            $this->addError('bookSearch', 'No se encontró el libro del QR en el catálogo.');
+            $this->dispatch('loan-form-ready');
+
+            return;
+        }
+
+        $this->selectBook((string) $book->getKey());
+        $this->dispatch('loan-form-ready');
+    }
+
     public function createLoan(): void
     {
         $this->validate([

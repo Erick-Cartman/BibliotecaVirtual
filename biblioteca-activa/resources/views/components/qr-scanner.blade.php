@@ -47,6 +47,16 @@
                 <pre class="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-words font-sans text-sm text-emerald-950" x-text="result"></pre>
             </div>
 
+            <button
+                type="button"
+                class="btn-primary mt-4 w-full cursor-pointer"
+                x-show="isBookQr"
+                x-cloak
+                x-bind:disabled="isSubmittingBook"
+                x-on:click="reserveScannedBook()"
+                x-text="isSubmittingBook ? 'Buscando libro...' : 'Reservar libro'"
+            ></button>
+
             <button type="button" class="btn-secondary mt-6 w-full cursor-pointer" x-on:click="close()">Cerrar</button>
         </section>
     </div>

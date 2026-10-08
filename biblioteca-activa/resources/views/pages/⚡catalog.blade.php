@@ -426,7 +426,7 @@ new class extends Component
                                 'Fecha: '.$reservationConfirmation['reserved_at'],
                             ]);
                         @endphp
-                        <canvas x-ref="reservationQr" class="mx-auto size-64 max-w-full" x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($reservationQrPayload), { width: 256, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#29211D', light: '#FFF8EF' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });" aria-label="Código QR con los datos de la reservación"></canvas>
+                        <canvas x-ref="reservationQr" class="mx-auto size-64 max-w-full" x-init="const renderQr = () => { window.QRCode?.toCanvas($refs.reservationQr, @js($reservationQrPayload), { width: 256, margin: 4, errorCorrectionLevel: 'L', color: { dark: '#29211D', light: '#FFF8EF' } }); }; window.QRCode ? renderQr() : window.addEventListener('qrcode:ready', renderQr, { once: true });" aria-label="Código QR con los datos de la reservación"></canvas>
                         <p class="mt-3 text-xs font-semibold text-slate-500">Escanéalo para consultar esta reserva.</p>
                     </div>
                     <dl class="divide-y divide-slate-100 rounded-2xl border border-slate-200">
