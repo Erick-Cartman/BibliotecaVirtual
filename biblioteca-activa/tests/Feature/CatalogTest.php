@@ -255,6 +255,7 @@ class CatalogTest extends TestCase
 
         $this->actingAs($student)->get('/catalogo')
             ->assertOk()
+            ->assertSee('brightness-0 invert')
             ->assertSee('Catálogo')
             ->assertSee('Metodología de la investigación');
     }
