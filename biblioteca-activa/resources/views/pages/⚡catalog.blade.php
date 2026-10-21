@@ -98,6 +98,18 @@ new class extends Component
             ->get(['program'])
             ->pluck('program')
             ->filter()
+            ->reject(fn ($program) => in_array(Str::lower(trim((string) $program)), [
+                '2',
+                '2 copias',
+                '3',
+                '4',
+                '13',
+                '2 duplicados',
+                '202',
+                '3 duplicados',
+                '4 copias',
+                '6 copias',
+            ], true))
             ->unique()
             ->sort()
             ->values();
