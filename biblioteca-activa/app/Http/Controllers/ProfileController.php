@@ -48,7 +48,8 @@ class ProfileController extends Controller
         $newAvatarPath = null;
 
         if ($request->hasFile('avatar')) {
-            $newAvatarPath = $request->file('avatar')->store('avatars', 'public');
+            $avatarDisk = (string) config('filesystems.avatar_disk');
+            $newAvatarPath = $request->file('avatar')->store('avatars', $avatarDisk);
         }
 
         $user->first_name = trim($data['first_name']);
@@ -67,7 +68,7 @@ class ProfileController extends Controller
         $user->save();
 
         if ($newAvatarPath !== null && filled($oldAvatarPath)) {
-            Storage::disk('public')->delete($oldAvatarPath);
+            Storage::disk((string) config('filesystems.avatar_disk'))->delete($oldAvatarPath);
         }
 
         return back()->with('profile_message', 'Tus datos personales se actualizaron correctamente.');

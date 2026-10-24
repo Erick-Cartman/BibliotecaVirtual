@@ -12,7 +12,8 @@ class ProfileTest extends TestCase
 {
     public function test_authenticated_user_can_update_personal_data_and_jpeg_avatar(): void
     {
-        Storage::fake('public');
+        $avatarDisk = (string) config('filesystems.avatar_disk');
+        Storage::fake($avatarDisk);
         $user = User::factory()->create([
             'name' => 'Nombre Original',
             'email' => 'original@example.com',
@@ -38,7 +39,7 @@ class ProfileTest extends TestCase
         $this->assertSame('López', $updatedUser->last_name);
         $this->assertSame('maria.lopez@example.com', $updatedUser->email);
         $this->assertTrue(Hash::check('NuevaClave123', $updatedUser->password));
-        Storage::disk('public')->assertExists($updatedUser->avatar_path);
+        Storage::disk($avatarDisk)->assertExists($updatedUser->avatar_path);
     }
 
     public function test_profile_rejects_non_jpeg_avatar(): void

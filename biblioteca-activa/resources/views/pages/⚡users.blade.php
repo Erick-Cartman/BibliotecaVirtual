@@ -8,7 +8,6 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use MongoDB\BSON\Regex;
 
 new class extends Component
 {
@@ -26,8 +25,8 @@ new class extends Component
     {
         $query = User::query();
         if ($this->search !== '') {
-            $regex = new Regex(preg_quote($this->search), 'i');
-            $query->where(fn ($q) => $q->where('name', 'regex', $regex)->orWhere('email', 'regex', $regex)->orWhere('student_code', 'regex', $regex));
+            $search = addcslashes($this->search, '%_\\');
+            $query->where(fn ($q) => $q->where('name', 'ilike', '%'.$search.'%')->orWhere('email', 'ilike', '%'.$search.'%')->orWhere('student_code', 'ilike', '%'.$search.'%'));
         }
         return $query->orderBy('name')->paginate(15);
     }

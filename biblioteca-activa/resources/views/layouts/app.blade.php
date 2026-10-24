@@ -34,7 +34,7 @@
             <div class="mt-7 border-t border-slate-800 pt-5">
                 <button type="button" class="group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2 text-left transition hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500" aria-label="Ver datos personales" aria-haspopup="dialog" aria-controls="profile-view-dialog" onclick="document.getElementById('profile-view-dialog').showModal()">
                     @if($profileUser->avatar_path)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($profileUser->avatar_path) }}" alt="Foto de {{ $profileUser->name }}" class="size-11 rounded-full object-cover ring-2 ring-slate-700 transition group-hover:scale-105 group-hover:ring-brand-500">
+                        <img src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.avatar_disk'))->url($profileUser->avatar_path) }}" alt="Foto de {{ $profileUser->name }}" class="size-11 rounded-full object-cover ring-2 ring-slate-700 transition group-hover:scale-105 group-hover:ring-brand-500">
                     @else
                         <span class="grid size-11 shrink-0 place-items-center rounded-full bg-brand-600 font-display text-lg font-bold transition group-hover:bg-brand-500 group-hover:ring-2 group-hover:ring-brand-300" aria-hidden="true">{{ str($profileUser->name)->substr(0, 1)->upper() }}</span>
                     @endif
@@ -67,7 +67,7 @@
             </div>
             <div class="mt-7 flex items-center gap-4 rounded-2xl bg-slate-50 p-4">
                 @if($profileUser->avatar_path)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($profileUser->avatar_path) }}" alt="Foto de {{ $profileUser->name }}" class="size-16 rounded-full object-cover ring-2 ring-brand-100">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::disk(config('filesystems.avatar_disk'))->url($profileUser->avatar_path) }}" alt="Foto de {{ $profileUser->name }}" class="size-16 rounded-full object-cover ring-2 ring-brand-100">
                 @else
                     <span class="grid size-16 shrink-0 place-items-center rounded-full bg-brand-600 font-display text-2xl font-bold text-white" aria-hidden="true">{{ str($profileUser->name)->substr(0, 1)->upper() }}</span>
                 @endif

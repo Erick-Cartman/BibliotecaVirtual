@@ -3,10 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 #[Fillable(['actor_id', 'action', 'entity_type', 'entity_id', 'summary', 'metadata'])]
 class AuditLog extends Model
 {
-    protected $connection = 'mongodb';
+    use HasUuids;
+
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 }

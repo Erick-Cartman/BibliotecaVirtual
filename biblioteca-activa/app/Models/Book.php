@@ -5,9 +5,10 @@ namespace App\Models;
 use App\CopyStatus;
 use Database\Factories\BookFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use MongoDB\Laravel\Eloquent\Model;
 
 #[Fillable([
     'title', 'authors', 'isbn', 'publisher', 'publication_year', 'dewey_code',
@@ -17,13 +18,13 @@ use MongoDB\Laravel\Eloquent\Model;
 class Book extends Model
 {
     /** @use HasFactory<BookFactory> */
-    use HasFactory;
-
-    protected $connection = 'mongodb';
+    use HasFactory, HasUuids;
 
     protected function casts(): array
     {
         return [
+            'authors' => 'array',
+            'source' => 'array',
             'publication_year' => 'integer',
             'total_copies' => 'integer',
             'available_copies' => 'integer',

@@ -1,6 +1,7 @@
 .tools/
 .data/
 .logs/
+backups/
 biblioteca-activa/node_modules/
 biblioteca-activa/vendor/
 **/.env

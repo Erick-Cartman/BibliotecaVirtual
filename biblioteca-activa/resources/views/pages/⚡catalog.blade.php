@@ -11,7 +11,6 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use MongoDB\BSON\Regex;
 
 new class extends Component
 {
@@ -80,7 +79,8 @@ new class extends Component
         $query = Book::query()->where('active', true);
 
         if ($this->search !== '') {
-            $query->where('search_text', 'regex', new Regex(preg_quote(Str::lower(Str::ascii($this->search))), 'i'));
+            $search = addcslashes(Str::lower(Str::ascii($this->search)), '%_\\');
+            $query->where('search_text', 'like', '%'.$search.'%');
         }
 
         if ($this->program !== '') {

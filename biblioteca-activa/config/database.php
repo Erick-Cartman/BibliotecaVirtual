@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mongodb'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,8 +34,8 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('DB_URI', 'mongodb://127.0.0.1:27017'),
-            'database' => env('DB_DATABASE', 'biblioteca_activa'),
+            'dsn' => env('MONGO_DB_URI', env('DB_URI', 'mongodb://127.0.0.1:27017')),
+            'database' => env('MONGO_DB_DATABASE', 'biblioteca_activa'),
         ],
 
         'sqlite' => [
@@ -103,6 +103,21 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+        ],
+
+        'supabase' => [
+            'driver' => 'pgsql',
+            'url' => env('SUPABASE_DB_URL'),
+            'host' => env('SUPABASE_DB_HOST', '127.0.0.1'),
+            'port' => env('SUPABASE_DB_PORT', '5432'),
+            'database' => env('SUPABASE_DB_DATABASE', 'postgres'),
+            'username' => env('SUPABASE_DB_USERNAME', 'postgres'),
+            'password' => env('SUPABASE_DB_PASSWORD', ''),
+            'charset' => env('SUPABASE_DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => env('SUPABASE_DB_SCHEMA', 'biblioteca'),
+            'sslmode' => env('SUPABASE_DB_SSLMODE', 'require'),
         ],
 
         'sqlsrv' => [

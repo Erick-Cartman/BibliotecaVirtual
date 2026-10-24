@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\LoanStatus;
+use Database\Factories\LoanFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use MongoDB\Laravel\Eloquent\Model;
 
 #[Fillable([
     'copy_id', 'book_id', 'user_id', 'operator_id', 'status', 'loaned_at', 'due_at',
@@ -14,10 +16,8 @@ use MongoDB\Laravel\Eloquent\Model;
 ])]
 class Loan extends Model
 {
-    /** @use HasFactory<\Database\Factories\LoanFactory> */
-    use HasFactory;
-
-    protected $connection = 'mongodb';
+    /** @use HasFactory<LoanFactory> */
+    use HasFactory, HasUuids;
 
     protected function casts(): array
     {

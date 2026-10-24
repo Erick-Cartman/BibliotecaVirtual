@@ -1,23 +1,20 @@
 # Iniciar manualmente Biblioteca Activa
 
-La aplicación utiliza dos servicios locales: MongoDB y el servidor Laravel.
+La aplicación utiliza PostgreSQL y el servidor Laravel. MongoDB se conserva únicamente para respaldos o una eventual restauración.
 
-## 1. Iniciar MongoDB
+## 1. Iniciar PostgreSQL
 
 Abre una ventana de PowerShell y ejecuta:
 
 ```powershell
-cd C:\modular\BibliotecaActiva
-
-& ".\.tools\mongodb\mongodb-win32-x86_64-windows-8.2.12\bin\mongod.exe" `
-  --dbpath ".\.data\mongodb" `
-  --bind_ip 127.0.0.1 `
-  --port 27017 `
-  --logpath ".\.logs\mongod.log" `
-  --logappend
+cd C:\modular\biblioteca-activa
+$pgBin = 'C:\modular\.tools\postgresql-18.6\pgsql\bin'
+$pgData = 'C:\modular\.data\postgresql'
+& "$pgBin\pg_ctl.exe" -D $pgData -l 'C:\modular\.logs\postgresql.log' `
+  -o '-p 5432 -h 127.0.0.1' start
 ```
 
-MongoDB quedará escuchando en `127.0.0.1:27017`.
+PostgreSQL quedará escuchando en `127.0.0.1:5432`.
 
 ## 2. Iniciar Laravel
 
@@ -53,7 +50,7 @@ Consulta la IP del equipo con `ipconfig` y abre desde el otro equipo:
 http://IP_DEL_EQUIPO:8000
 ```
 
-MongoDB permanece escuchando únicamente en `127.0.0.1:27017`; Laravel se conecta a él localmente.
+PostgreSQL permanece escuchando únicamente en `127.0.0.1:5432`; Laravel se conecta a él localmente.
 
 ## Cámara desde otro dispositivo con HTTPS
 
@@ -69,7 +66,7 @@ Abre la dirección HTTPS que muestre el script, normalmente `https://IP_DEL_EQUI
 ## Verificar los servicios
 
 ```powershell
-Test-NetConnection 127.0.0.1 -Port 27017
+Test-NetConnection 127.0.0.1 -Port 5432
 Test-NetConnection 127.0.0.1 -Port 8000
 ```
 
@@ -88,7 +85,7 @@ También puedes presionar `Ctrl+C` en cada ventana donde se esté ejecutando un 
 
 ## Inicio automático de ambos servicios
 
-Como alternativa, puedes iniciar MongoDB y Laravel juntos con:
+Como alternativa, puedes iniciar PostgreSQL y Laravel juntos con:
 
 ```powershell
 cd C:\modular\BibliotecaActiva\biblioteca-activa

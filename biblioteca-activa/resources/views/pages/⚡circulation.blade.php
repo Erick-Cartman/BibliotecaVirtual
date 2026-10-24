@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use MongoDB\BSON\Regex;
 
 new class extends Component
 {
@@ -52,7 +51,7 @@ new class extends Component
         return Book::query()
             ->where('active', true)
             ->where('available_copies', '>', 0)
-            ->where('search_text', 'regex', new Regex(preg_quote(Str::lower(Str::ascii($search))), 'i'))
+            ->where('search_text', 'like', '%'.addcslashes(Str::lower(Str::ascii($search)), '%_\\').'%')
             ->orderBy('title')
             ->limit(8)
             ->get();
@@ -245,11 +244,11 @@ new class extends Component
             ->get();
 
         $users = User::query()
-            ->whereIn('_id', $reservations->pluck('user_id')->filter()->unique()->values()->all())
+            ->whereIn('id', $reservations->pluck('user_id')->filter()->unique()->values()->all())
             ->get()
             ->keyBy(fn (User $user): string => (string) $user->getKey());
         $books = Book::query()
-            ->whereIn('_id', $reservations->pluck('book_id')->filter()->unique()->values()->all())
+            ->whereIn('id', $reservations->pluck('book_id')->filter()->unique()->values()->all())
             ->get()
             ->keyBy(fn (Book $book): string => (string) $book->getKey());
 

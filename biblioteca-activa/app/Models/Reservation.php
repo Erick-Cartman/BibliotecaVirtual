@@ -5,9 +5,10 @@ namespace App\Models;
 use App\ReservationStatus;
 use Database\Factories\ReservationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use MongoDB\Laravel\Eloquent\Model;
 
 #[Fillable([
     'book_id', 'user_id', 'status', 'reserved_at', 'expires_at', 'book_title',
@@ -16,9 +17,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Reservation extends Model
 {
     /** @use HasFactory<ReservationFactory> */
-    use HasFactory;
-
-    protected $connection = 'mongodb';
+    use HasFactory, HasUuids;
 
     protected function casts(): array
     {

@@ -16,7 +16,7 @@ class ResolveBookCovers extends Command
         {--limit=0 : Limita la cantidad de libros a procesar}
         {--batch-size=25 : Cantidad de ISBN por búsqueda}
         {--delay=150 : Milisegundos de espera entre consultas}
-        {--dry-run : No guarda cambios en MongoDB}
+        {--dry-run : No guarda cambios en PostgreSQL}
         {--write-seed-overrides : Actualiza database/seeders/data/book_covers.json}';
 
     protected $description = 'Busca portadas faltantes por ISBN o título y autor';
@@ -75,7 +75,7 @@ class ResolveBookCovers extends Command
         if ($this->option('dry-run')) {
             $this->comment('Modo simulación: no se guardaron cambios.');
         } else {
-            $this->info('Portadas guardadas en MongoDB: '.$saved);
+            $this->info('Portadas guardadas en PostgreSQL: '.$saved);
         }
 
         return self::SUCCESS;
