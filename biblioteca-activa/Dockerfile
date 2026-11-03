@@ -12,7 +12,12 @@ RUN npm run build
 
 FROM dunglas/frankenphp:1-php8.4-bookworm AS runtime
 
-RUN install-php-extensions pdo_pgsql
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        p7zip-full \
+        unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions pdo_pgsql zip
 
 WORKDIR /app
 
