@@ -18,8 +18,8 @@
                 $profileFirstName = old('first_name', $profileUser->first_name ?: ($profileNameParts[0] ?? ''));
                 $profileLastName = old('last_name', $profileUser->last_name ?: ($profileNameParts[1] ?? ''));
             @endphp
-            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center" aria-label="Biblioteca Activa, inicio">
-                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-20 w-auto object-contain brightness-0 invert">
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center" aria-label="Biblioteca Virtual, inicio">
+                <x-brand-logo mark-class="h-11 w-36" text-class="text-xs text-white" image-class="brightness-0 invert" />
             </a>
             <nav class="mt-7 flex gap-2 overflow-x-auto lg:flex-col" aria-label="Navegación principal">
                 <a href="{{ route('dashboard') }}" wire:navigate @class(['rounded-xl px-4 py-3 text-sm font-semibold transition', 'bg-card text-ink' => request()->routeIs('dashboard'), 'text-slate-300 hover:bg-slate-800 hover:text-white' => ! request()->routeIs('dashboard')])>Resumen</a>

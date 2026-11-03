@@ -82,8 +82,8 @@ function setup(t, { frame = null, getUserMedia = null, secure = true } = {}) {
 }
 
 const payloads = [
-    ['book', 'Biblioteca Activa\nFicha bibliografica\nTitulo: Diseño de sistemas\nAutor(es): Elena Torres\nISBN: 9781234567897\nEditorial: Editorial Académica\nAnio de edicion: 2024\nClasificacion: 005.12\nUnidad de aprendizaje: Ingeniería de software\nPrograma: Ingeniería\nDisponibilidad: 2 de 3'],
-    ['reservation', 'Biblioteca Activa\nReservacion: 507f1f77bcf86cd799439011\nAlumno: María Pérez\nCodigo de alumno: EST-001\nLibro: Historia de México\nEstado: Pendiente\nFecha: 06/10/2026 12:00'],
+    ['book', 'Biblioteca Virtual\nFicha bibliografica\nTitulo: Diseño de sistemas\nAutor(es): Elena Torres\nISBN: 9781234567897\nEditorial: Editorial Académica\nAnio de edicion: 2024\nClasificacion: 005.12\nUnidad de aprendizaje: Ingeniería de software\nPrograma: Ingeniería\nDisponibilidad: 2 de 3'],
+    ['reservation', 'Biblioteca Virtual\nReservacion: 507f1f77bcf86cd799439011\nAlumno: María Pérez\nCodigo de alumno: EST-001\nLibro: Historia de México\nEstado: Pendiente\nFecha: 06/10/2026 12:00'],
 ];
 
 for (const [kind, payload] of payloads) {
@@ -105,7 +105,7 @@ for (const [kind, payload] of payloads) {
 }
 
 test('continues scanning a blank frame and reads a QR in a later frame', async (t) => {
-    const payload = 'Biblioteca Activa\nLibro: Álgebra';
+    const payload = 'Biblioteca Virtual\nLibro: Álgebra';
     const frame = qrFrame(payload);
     const blank = { ...frame, data: new Uint8ClampedArray(frame.data.length).fill(255) };
     const { scanner, context, timers } = setup(t, { frame: blank });

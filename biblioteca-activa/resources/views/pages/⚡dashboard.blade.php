@@ -47,7 +47,7 @@ new class extends Component
 ?>
 
 <div>
-    <x-slot:title>Resumen · Biblioteca Activa</x-slot:title>
+    <x-slot:title>Resumen · Biblioteca Virtual</x-slot:title>
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div><p class="eyebrow">Panel principal</p><h1 class="mt-2 font-display text-4xl font-bold text-ink">Hola, {{ str(auth()->user()->name)->before(' ') }}</h1><p class="mt-2 text-slate-600">Este es el estado de tu biblioteca hoy.</p></div>
         <a href="{{ route('catalog') }}" wire:navigate class="btn-primary">Buscar en el catálogo</a>

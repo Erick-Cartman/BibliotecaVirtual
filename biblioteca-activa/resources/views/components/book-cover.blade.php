@@ -34,6 +34,6 @@
             </svg>
         </span>
         <span class="book-cover-fallback__title">{{ $book->title }}</span>
-        <span class="book-cover-fallback__footer">Biblioteca Activa</span>
+        <span class="book-cover-fallback__footer">Biblioteca Virtual</span>
     </div>
 </div>

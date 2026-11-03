@@ -3,17 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Biblioteca Activa: consulta el acervo escolar, tus préstamos y reservaciones.">
-    <title>Biblioteca Activa</title>
+    <meta name="description" content="Biblioteca Virtual: consulta el acervo escolar, tus préstamos y reservaciones.">
+    <title>Biblioteca Virtual</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-surface">
     <header class="border-b border-slate-200 bg-ivory/95">
         <nav class="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8" aria-label="Navegación principal">
-            <a href="{{ route('home') }}" class="flex items-center" aria-label="Biblioteca Activa, inicio">
-                <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="-ml-3 h-20 w-auto shrink-0 object-contain">
+            <a href="{{ route('home') }}" class="flex items-center" aria-label="Biblioteca Virtual, inicio">
+                <x-brand-logo mark-class="h-8 w-24 sm:h-10 sm:w-32" text-class="hidden" />
             </a>
-            <span class="absolute left-1/2 hidden -translate-x-1/2 font-display text-2xl font-bold tracking-tight text-brand-700 sm:block sm:text-3xl">Biblioteca Activa</span>
+            <span class="absolute left-1/2 hidden -translate-x-1/2 font-display text-2xl font-bold tracking-tight text-brand-700 sm:block sm:text-3xl">Biblioteca Virtual</span>
             <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="btn-primary">{{ auth()->check() ? 'Ir al panel' : 'Iniciar sesión' }}</a>
         </nav>
     </header>
@@ -61,7 +61,7 @@
                                 aria-label="Vista 3D de {{ $featuredBook->title }} girando 360 grados"
                             >
                                 <div class="book-3d__face book-3d__back" aria-hidden="true">
-                                    <span class="book-3d__back-mark">Biblioteca<br>Activa</span>
+                                    <span class="book-3d__back-mark">Biblioteca<br>Virtual</span>
                                 </div>
                                 <div class="book-3d__face book-3d__spine" aria-hidden="true">
                                     <span>{{ $featuredBook->title }}</span>
@@ -105,6 +105,6 @@
             </div>
         </section>
     </main>
-    <footer class="border-t border-slate-200 bg-surface"><div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:justify-between lg:px-8"><p>Biblioteca Activa · Proyecto académico UDG</p><p>Diseñada para acceso claro y responsable.</p></div></footer>
+    <footer class="border-t border-slate-200 bg-surface"><div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:justify-between lg:px-8"><p>Biblioteca Virtual · Proyecto académico UDG</p><p>Diseñada para acceso claro y responsable.</p></div></footer>
 </body>
 </html>

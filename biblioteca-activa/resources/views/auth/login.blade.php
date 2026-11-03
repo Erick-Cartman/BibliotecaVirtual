@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Iniciar sesión · Biblioteca Activa</title>
+    <title>Iniciar sesión · Biblioteca Virtual</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-sidebar">
     <main class="grid min-h-screen lg:grid-cols-2">
         <section class="hidden bg-hero p-12 text-white lg:flex lg:flex-col lg:justify-between">
             <div class="max-w-xl">
-                <a href="{{ route('home') }}" class="mx-auto mb-8 flex w-fit" aria-label="Biblioteca Activa, inicio">
-                    <img src="{{ asset('BA.png') }}" alt="Biblioteca Activa" class="h-36 w-auto object-contain brightness-0 invert">
+                <a href="{{ route('home') }}" class="mx-auto mb-8 flex w-fit" aria-label="Biblioteca Virtual, inicio">
+                    <x-brand-logo mark-class="h-20 w-60" text-class="text-lg text-white" image-class="brightness-0 invert" />
                 </a>
                 <p class="text-sm font-bold uppercase tracking-[.2em] text-brand-200">Comunidad académica</p><h1 class="mt-5 font-display text-5xl font-bold leading-tight">Tu biblioteca, siempre en movimiento.</h1><p class="mt-5 text-lg leading-8 text-brand-100">Consulta el acervo y gestiona la actividad bibliotecaria desde un solo lugar.</p>
                 <img src="{{ asset('school-reader.png') }}" alt="Persona leyendo un libro en el patio de una escuela" class="mt-8 h-56 w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/15" loading="eager" decoding="async">
@@ -32,26 +32,6 @@
                     <label class="flex items-center gap-3 text-sm text-slate-700"><input class="size-4 rounded border-slate-300 text-brand-600" type="checkbox" name="remember" value="1">Mantener la sesión iniciada</label>
                     <button class="btn-primary w-full" type="submit">Ingresar al panel</button>
                 </form>
-                <section aria-labelledby="demo-accounts-title" class="mt-7 rounded-xl bg-surface p-4 text-sm text-slate-700">
-                    <h2 id="demo-accounts-title" class="font-bold text-ink">Cuentas de prueba de Yahir</h2>
-                    <dl class="mt-4 space-y-4">
-                        <div>
-                            <dt class="font-semibold">Estudiante</dt>
-                            <dd class="break-all">yahir@biblioteca.test</dd>
-                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
-                        </div>
-                        <div>
-                            <dt class="font-semibold">Administrador</dt>
-                            <dd class="break-all">yahir.admin@biblioteca.test</dd>
-                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
-                        </div>
-                        <div>
-                            <dt class="font-semibold">Bibliotecario</dt>
-                            <dd class="break-all">yahir.bibliotecario@biblioteca.test</dd>
-                            <dd>Contraseña: <code class="font-semibold">1234</code></dd>
-                        </div>
-                    </dl>
-                </section>
                 <p class="mt-7 rounded-xl bg-surface p-4 text-sm leading-6 text-slate-600">¿Necesitas acceso? Solicítalo directamente al personal de biblioteca.</p>
             </div>
         </section>

@@ -44,7 +44,7 @@ class BookPolicy
      */
     public function delete(User $user, Book $book): bool
     {
-        return $user->isAdmin();
+        return $user->canManageLibrary();
     }
 
     /**
@@ -52,7 +52,7 @@ class BookPolicy
      */
     public function restore(User $user, Book $book): bool
     {
-        return $user->isAdmin();
+        return $user->canManageLibrary();
     }
 
     /**

@@ -98,6 +98,27 @@ class CatalogTest extends TestCase
         $this->assertStringContainsString('nuevo titulo de investigacion', $updatedBook->search_text);
     }
 
+    public function test_librarian_can_remove_a_book_from_the_catalog_from_its_record(): void
+    {
+        $librarian = User::factory()->librarian()->create();
+        $book = Book::factory()->create(['title' => 'Libro para retirar']);
+
+        Livewire::actingAs($librarian)
+            ->test('pages::catalog')
+            ->call('viewBook', (string) $book->getKey())
+            ->assertSee('Eliminar libro')
+            ->call('deleteBook', (string) $book->getKey())
+            ->assertHasNoErrors()
+            ->assertSet('selectedBookId', null)
+            ->assertSee('El libro se retiró del catálogo correctamente.');
+
+        $this->assertFalse($book->refresh()->active);
+        $this->assertDatabaseHas('books', [
+            'id' => (string) $book->getKey(),
+            'active' => false,
+        ]);
+    }
+
     public function test_book_editing_requires_a_title_and_author(): void
     {
         $librarian = User::factory()->librarian()->create();
@@ -126,6 +147,19 @@ class CatalogTest extends TestCase
             ->assertDontSee('Editar datos')
             ->call('editBook', (string) $book->getKey())
             ->assertForbidden();
+    }
+
+    public function test_student_cannot_remove_a_book_from_the_catalog(): void
+    {
+        $student = User::factory()->create();
+        $book = Book::factory()->create();
+
+        Livewire::actingAs($student)
+            ->test('pages::catalog')
+            ->call('deleteBook', (string) $book->getKey())
+            ->assertForbidden();
+
+        $this->assertTrue($book->refresh()->active);
     }
 
     public function test_admin_can_open_a_book_record_and_start_editing(): void

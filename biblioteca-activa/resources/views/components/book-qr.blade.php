@@ -2,7 +2,7 @@
 
 @php
     $payloadLines = [
-        'Biblioteca Activa',
+        'Biblioteca Virtual',
         'Ficha bibliografica',
         'Titulo: '.(string) ($book->title ?: 'Sin titulo'),
         'Autor(es): '.($book->authorLine() ?: 'No registrado'),

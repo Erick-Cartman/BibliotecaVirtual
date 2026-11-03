@@ -9,7 +9,7 @@ class AuthenticationTest extends TestCase
 {
     public function test_landing_and_login_pages_are_available(): void
     {
-        $this->get('/')->assertOk()->assertSee('Biblioteca Activa')->assertSee('Iniciar sesión');
+        $this->get('/')->assertOk()->assertSee('Biblioteca Virtual')->assertSee('Iniciar sesión');
         $this->get('/login')->assertOk()->assertSee('Inicia sesión');
     }
 

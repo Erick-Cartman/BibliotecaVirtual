@@ -278,7 +278,7 @@ new class extends Component
     x-data
     x-on:loan-form-ready.window="$nextTick(() => { document.getElementById('new-loan')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('bookSearch')?.focus({ preventScroll: true }); })"
 >
-    <x-slot:title>Circulación · Biblioteca Activa</x-slot:title>
+    <x-slot:title>Circulación · Biblioteca Virtual</x-slot:title>
 
     <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>

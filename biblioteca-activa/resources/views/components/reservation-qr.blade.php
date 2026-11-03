@@ -8,7 +8,7 @@
     $studentCode = $reservation->getAttribute('student_code_display') ?: $reservation->student_code;
     $reservationStudentEmail = $reservation->getAttribute('student_email_display') ?: $studentEmail;
     $payloadLines = [
-        'Biblioteca Activa',
+        'Biblioteca Virtual',
         'Reservacion: '.(string) $reservation->getKey(),
         'Alumno: '.(string) ($studentName ?: 'Alumno'),
         'Codigo de alumno: '.(string) ($studentCode ?: 'Sin codigo'),

@@ -164,6 +164,17 @@ new class extends Component
         unset($this->selectedBook);
     }
 
+    public function deleteBook(string $bookId): void
+    {
+        $book = Book::query()->findOrFail($bookId);
+        $this->authorize('delete', $book);
+
+        $book->update(['active' => false]);
+        $this->closeBookDetails();
+        unset($this->books, $this->programs);
+        session()->flash('message', 'El libro se retiró del catálogo correctamente.');
+    }
+
     public function closeReservationConfirmation(): void
     {
         $this->reservationConfirmation = null;
@@ -396,7 +407,7 @@ new class extends Component
 ?>
 
 <div>
-    <x-slot:title>Catálogo · Biblioteca Activa</x-slot:title>
+    <x-slot:title>Catálogo · Biblioteca Virtual</x-slot:title>
 
     <div>
         <p class="eyebrow">Acervo escolar</p>
@@ -428,7 +439,7 @@ new class extends Component
                     <div class="rounded-2xl border border-slate-200 bg-card p-4 text-center shadow-sm" wire:ignore>
                         @php
                             $reservationQrPayload = implode("\n", [
-                                'Biblioteca Activa',
+                                'Biblioteca Virtual',
                                 'Reservacion: '.$reservationConfirmation['reservation_id'],
                                 'Alumno: '.$reservationConfirmation['student_name'],
                                 'Correo: '.$reservationConfirmation['student_email'],
@@ -606,6 +617,20 @@ new class extends Component
                                 <button type="button" class="btn-primary cursor-pointer gap-2" wire:click="editBook('{{ $selectedBook->getKey() }}')">
                                     <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>
                                     Editar datos
+                                </button>
+                            @endcan
+                            @can('delete', $selectedBook)
+                                <button
+                                    type="button"
+                                    class="btn-secondary cursor-pointer gap-2 border-red-200 text-red-700 hover:border-red-400 hover:text-red-800"
+                                    wire:click="deleteBook('{{ $selectedBook->getKey() }}')"
+                                    wire:confirm="¿Seguro que deseas retirar este libro del catálogo? Se conservará su historial, pero dejará de aparecer en las búsquedas."
+                                    wire:loading.attr="disabled"
+                                    wire:target="deleteBook('{{ $selectedBook->getKey() }}')"
+                                >
+                                    <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current" stroke-width="2" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="m6 7 1 13h10l1-13M9 7V4h6v3"/></svg>
+                                    <span wire:loading.remove wire:target="deleteBook('{{ $selectedBook->getKey() }}')">Eliminar libro</span>
+                                    <span wire:loading wire:target="deleteBook('{{ $selectedBook->getKey() }}')">Eliminando…</span>
                                 </button>
                             @endcan
                             @if (auth()->user()->role->value === 'student')

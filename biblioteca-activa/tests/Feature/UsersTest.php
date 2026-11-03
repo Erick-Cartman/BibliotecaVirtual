@@ -3,11 +3,30 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\UserRole;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
+    public function test_admin_creates_a_librarian_profile(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        Livewire::actingAs($admin)
+            ->test('pages::users')
+            ->set('name', 'Nuevo bibliotecario')
+            ->set('email', 'nuevo.bibliotecario@example.com')
+            ->set('role', UserRole::Librarian->value)
+            ->call('createUser')
+            ->assertHasNoErrors();
+
+        $librarian = User::query()->where('email', 'nuevo.bibliotecario@example.com')->firstOrFail();
+
+        $this->assertSame(UserRole::Librarian, $librarian->role);
+        $this->assertNull($librarian->student_code);
+    }
+
     public function test_admin_creates_a_student_with_the_next_code(): void
     {
         $admin = User::factory()->admin()->create();
@@ -24,6 +43,21 @@ class UsersTest extends TestCase
         $student = User::query()->where('email', 'nuevo.estudiante@example.com')->firstOrFail();
 
         $this->assertSame('EST-002', $student->student_code);
+    }
+
+    public function test_admin_cannot_create_another_admin_from_the_user_management_screen(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        Livewire::actingAs($admin)
+            ->test('pages::users')
+            ->set('name', 'Nuevo administrador')
+            ->set('email', 'nuevo.admin@example.com')
+            ->set('role', UserRole::Admin->value)
+            ->call('createUser')
+            ->assertHasErrors(['role']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'nuevo.admin@example.com']);
     }
 
     public function test_a_new_student_without_a_code_receives_one_automatically(): void
