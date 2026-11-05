@@ -55,77 +55,129 @@
     .eyebrow { @apply text-xs font-bold uppercase tracking-[0.18em] text-brand-700; }
 
     .book-cover-fallback {
+        container-type: inline-size;
         position: relative;
         isolation: isolate;
         overflow: hidden;
-        background: linear-gradient(145deg, hsl(var(--book-cover-hue) 78% 90%), hsl(calc(var(--book-cover-hue) + 34) 78% 96%) 55%, var(--color-white));
+        justify-content: space-between;
+        padding: clamp(0.9rem, 6cqi, 1.65rem);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--book-cover-paper) 82%, white), var(--book-cover-paper) 54%, color-mix(in srgb, var(--book-cover-accent) 15%, var(--book-cover-paper)));
+        color: var(--book-cover-ink);
     }
 
     .book-cover-fallback::before {
         position: absolute;
-        inset: 12% -22% auto;
+        top: -22%;
+        right: -26%;
         z-index: -1;
-        height: 8rem;
-        border: 1px solid hsl(var(--book-cover-hue) 62% 48% / 0.22);
+        width: 84%;
+        aspect-ratio: 1;
+        border: 1px solid color-mix(in srgb, var(--book-cover-accent) 36%, transparent);
         border-radius: 999px;
         content: '';
-        transform: rotate(-24deg);
+        box-shadow: 0 0 0 1.35rem color-mix(in srgb, var(--book-cover-accent) 6%, transparent), 0 0 0 2.7rem color-mix(in srgb, var(--book-cover-accent) 4%, transparent);
     }
 
     .book-cover-fallback::after {
         position: absolute;
-        right: -3rem;
-        bottom: -3rem;
+        bottom: -19%;
+        left: -22%;
         z-index: -1;
-        width: 9rem;
-        height: 9rem;
+        width: 63%;
+        aspect-ratio: 1;
+        border: 1px solid color-mix(in srgb, var(--book-cover-accent) 30%, transparent);
         border-radius: 999px;
         content: '';
-        background: hsl(calc(var(--book-cover-hue) + 18) 70% 55% / 0.18);
-        filter: blur(1rem);
+        box-shadow: 0 0 0 1.2rem color-mix(in srgb, var(--book-cover-accent) 7%, transparent);
     }
 
-    .book-cover-fallback__badge {
-        border: 1px solid hsl(var(--book-cover-hue) 55% 42% / 0.18);
-        border-radius: 999px;
-        background: hsl(var(--book-cover-hue) 70% 98% / 0.78);
-        color: hsl(var(--book-cover-hue) 55% 30%);
-        font-size: 0.625rem;
+    .book-cover-fallback__frame {
+        position: absolute;
+        inset: 4.5%;
+        z-index: 1;
+        border: 1px solid color-mix(in srgb, var(--book-cover-ink) 15%, transparent);
+        pointer-events: none;
+    }
+
+    .book-cover-fallback__art {
+        position: absolute;
+        top: 5%;
+        right: 2%;
+        width: 96%;
+        height: 52%;
+        overflow: visible;
+        color: var(--book-cover-accent);
+        opacity: 0.88;
+    }
+
+    .book-cover-fallback__content {
+        position: relative;
+        z-index: 2;
+        margin-top: auto;
+        max-width: 100%;
+        padding: 0.7rem 0.45rem 0.25rem;
+        border-top: 2px solid color-mix(in srgb, var(--book-cover-accent) 68%, transparent);
+        background: linear-gradient(0deg, color-mix(in srgb, var(--book-cover-paper) 97%, transparent), color-mix(in srgb, var(--book-cover-paper) 88%, transparent));
+    }
+
+    .book-cover-fallback__brand,
+    .book-cover-fallback__topic,
+    .book-cover-fallback__author,
+    .book-cover-fallback__classification { margin: 0; }
+
+    .book-cover-fallback__brand {
+        color: color-mix(in srgb, var(--book-cover-ink) 68%, transparent);
+        font-size: clamp(0.48rem, 2.2cqi, 0.62rem);
         font-weight: 800;
-        letter-spacing: 0.14em;
-        padding: 0.35rem 0.6rem;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
     }
 
-    .book-cover-fallback__icon {
-        display: grid;
-        width: 3.5rem;
-        height: 3.5rem;
-        place-items: center;
-        border-radius: 1rem;
-        background: hsl(var(--book-cover-hue) 62% 46%);
-        color: var(--color-white);
-        box-shadow: 0 1rem 1.75rem hsl(var(--book-cover-hue) 60% 30% / 0.22);
+    .book-cover-fallback__topic {
+        display: -webkit-box;
+        overflow: hidden;
+        margin-top: 0.4rem;
+        color: var(--book-cover-accent);
+        font-size: clamp(0.5rem, 2.5cqi, 0.7rem);
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        line-height: 1.3;
+        text-transform: uppercase;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
     }
 
     .book-cover-fallback__title {
         display: -webkit-box;
         overflow: hidden;
-        color: var(--color-ink);
+        margin: 0.5rem 0 0;
+        color: var(--book-cover-ink);
         font-family: var(--font-display);
-        font-size: 1.125rem;
-        font-weight: 700;
-        line-height: 1.35;
+        font-size: clamp(0.85rem, 5.1cqi, 1.45rem);
+        font-weight: 800;
+        line-height: 1.1;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 5;
     }
 
-    .book-cover-fallback__footer {
-        color: hsl(var(--book-cover-hue) 55% 30%);
-        font-size: 0.625rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+    .book-cover-fallback__author {
+        display: -webkit-box;
+        overflow: hidden;
+        margin-top: 0.65rem;
+        color: color-mix(in srgb, var(--book-cover-ink) 78%, transparent);
+        font-size: clamp(0.6rem, 3.1cqi, 0.82rem);
+        font-weight: 600;
+        line-height: 1.3;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .book-cover-fallback__classification {
+        margin-top: 0.6rem;
+        color: color-mix(in srgb, var(--book-cover-ink) 58%, transparent);
+        font-size: clamp(0.5rem, 2.4cqi, 0.65rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
     }
 
     .book-stage {
